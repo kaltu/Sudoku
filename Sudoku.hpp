@@ -55,7 +55,7 @@ class Sudoku {
         bool build_sudoku(void) {
             int retry_count = 0 ;
             for ( int x = 0 ; x < sudoku_size ; ++x )
-                for ( int y = 0 ; y < sudoku_size ; ++y )
+                for ( int y = 0, retry_count = 0 ; y < sudoku_size ; ++y )
                     if ( !insert_number( x, y ) ) {
                         if ( retry_count < 5 ) {
                             ++retry_count ;
