@@ -18,7 +18,7 @@ class Sudoku {
                     if ( sudoku[i][j] ) used[ sudoku[i][j] ] = true ;
         } // check_cell()
 
-        /*  check if numbers were used in same column and same row
+        /*   check if numbers were used in same column and same row
          */
         void check_cross( int x, int y, bool* used ) {
             for ( int i = 1 ; i < sudoku_size+1 ; ++i ) {
@@ -35,11 +35,11 @@ class Sudoku {
             vector<int> v ;
             for ( int i = 1 ; i < sudoku_size+1 ; ++i )
                 if ( !used[i] ) v.push_back( i ) ;
-            return v.size() ? v[ rand() % v.size() ] : -1 ;
+            return v.size() ? v[ rand() % v.size() ] : 0 ;
             // if there is no such number meets the rule, return -1.
         } // random_unused()
 
-        /*  insert a valid number at specified (x, y)
+        /*   insert a valid number at specified (x, y)
          */
         bool insert_number( int x, int y ) {
             bool used[sudoku_size+1] ;
@@ -47,19 +47,28 @@ class Sudoku {
             check_cross( x, y, used ) ;
             check_cell( x, y, used ) ;
             sudoku[x][y] = random_unused( used ) ;
-            return sudoku[x][y] != -1 ;
+            return sudoku[x][y] ;
         } // insert_number()
 
-        /*  main method to build the sudoku
+        /*   main method to build the sudoku
          */
         bool build_sudoku(void) {
+            int retry_count = 0 ;
             for ( int x = 0 ; x < sudoku_size ; ++x )
                 for ( int y = 0 ; y < sudoku_size ; ++y )
-                    if ( !insert_number( x, y ) ) return false; // fail to insert a number.
+                    if ( !insert_number( x, y ) ) {
+                        if ( retry_count < 5 ) {
+                            ++retry_count ;
+                            y = -1 ; // so that after ++y it's 0
+                            for ( int i = 0 ; i < sudoku_size ; ++i )
+                                sudoku[x][i] = 0 ;
+                        } // re-build current x-axi untill retry limit.
+                        else return false ; // we failed this time.
+                    } // if() fail to insert a number
             return true ;
         } // build_sudoku()
 
-        /*  clear or initialize the sudoku
+        /*   clear or initialize the sudoku
          */
         void clear(void) {
             for ( int x = 0 ; x < sudoku_size ; ++x )
