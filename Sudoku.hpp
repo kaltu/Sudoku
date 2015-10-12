@@ -29,7 +29,7 @@ class Sudoku {
             } // for() 1 ~ sudoku_size
         } // check_cross()
 
-        /*    generate and retrun a array of useage data
+        /*    generate and retrun an array of useage data
          */
         bool* check_useage( int x, int y ) {
             bool* used = new bool[ sudoku_size+1 ] ;
