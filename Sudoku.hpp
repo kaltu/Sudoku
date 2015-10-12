@@ -57,10 +57,43 @@ class Sudoku {
             return sudoku[x][y] ;
         } // insert_number()
 
+        /*   only need search column
+         */
+        void replace_cross( int y, bool* used ) {
+            for ( int i = 1 ; i < sudoku_size+1 ; ++i )
+                if ( sudoku[i-1][y] )
+                    used[ sudoku[i-1][y] ] = true ;
+        } // replace_cross()
+
+        /*  not need row(.ver)
+         */
+        bool* replace_useage( int x, int y ) {
+            bool* used = new bool[ sudoku_size+1 ] ;
+            for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ; // initialize used[]
+            replace_cross( y, used ) ;
+            check_cell( x, y, used ) ;
+            return used ;
+        } // replace_useage()
         /*   should replace one number in x axi
          *   so that (x, y) can insert new number
          */
         bool replace( int x, int y ) {
+            bool *okuse = replace_useage( x, y ) ;
+            for ( int i = 0 ; i < sudoku_size ; i++ ) {
+                if ( ! okuse[ sudoku[x][i] ] ) {
+                    bool *test = replace_useage( x, i ) ;
+                    int times = 0 ;
+                    for( int f = 0 ; f < sudoku_size+1; f++ )
+                        if ( ! test[f] )
+						                times++ ;
+                    if ( times > 1 ) {
+                      sudoku[x][y] = sudoku[x][i] ;
+                      insert_number( x, i );
+                      return true ;
+                    } // if
+                }
+
+            } // for
             return false ;
         } // replace() uncompelet
 
