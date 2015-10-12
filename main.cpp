@@ -10,6 +10,7 @@ int main( int argc, char** argv ) {
     srand(time(NULL)) ;
     Sudoku sudoku(9) ;
     sudoku.print_sudoku() ;
-    cout << "build in " << sudoku.times() << " times." ;
+    cout << "build in " << sudoku.times() << " times." << endl ;
+    cout << "self check: " << ( sudoku.self_check() ? "success" : "failed" ) ;
     return 0 ;
 } // main

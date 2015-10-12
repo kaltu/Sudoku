@@ -9,11 +9,13 @@ using namespace std ;
 
 int main( int argc, char** argv ) {
     srand(time(NULL));
+    bool success = true ;
     int times[10000] = {} ;
     unsigned long long sum = 0 ;
     int max = 0, min = 900 ;
     for ( int i = 0 ; i < 10000 ; ++i ) {
         Sudoku sudoku(9) ;
+        success = success && sudoku.self_check() ;
         times[i] = sudoku.times() ;
         sum += times[i] ;
         if ( times[i] > max ) max = times[i] ;
@@ -28,6 +30,8 @@ int main( int argc, char** argv ) {
         e += (times[i] - ave) * (times[i] - ave) ;
     sig = sqrt(e / 10000 ) ;
     cout << "===========================" << endl
+         << "result:  " << ( success ? "success" : "***** failed *****" ) << endl
+         << "===========================" << endl
          << "statistic of 10,000 times: " << endl
          << "max: " << max << endl 
          << "min: " << min << endl

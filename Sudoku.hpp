@@ -117,18 +117,6 @@ class Sudoku {
                     if ( !insert_number( x, y ) )
                         if ( !replace( x, y ) )
                             if ( !re_build( x, y, retry_count) ) return false ;
-
-                    /*
-                    {
-                        if ( retry_count < 5 ) {
-                            ++retry_count ;
-                            y = -1 ; // so that after ++y it's 0
-                            for ( int i = 0 ; i < sudoku_size ; ++i )
-                                sudoku[x][i] = 0 ;
-                        } // re-build current x-axi untill retry limit.
-                        else return false ; // we failed this time.
-                    } // if() fail to insert a number
-                    */
             return true ;
         } // build_sudoku()
 
@@ -139,6 +127,7 @@ class Sudoku {
                 for ( int y = 0 ; y < sudoku_size ; ++y )
                     sudoku[x][y] = 0 ;
         } // clear()
+
     // end protected
     public:
         /*  the constructor of Sudoku class
@@ -163,6 +152,13 @@ class Sudoku {
         int times(void) {
             return build_times ;
         }
+        
+        bool self_check() {
+            for ( int x = 0 ; x < sudoku_size ; ++x )
+                for ( int y = 0 ; y < sudoku_size ; ++ y )
+                    if ( !sudoku[x][y] ) return false ;
+            return true ;
+        } // self_check()
 
         /*   print out whole sudoku
          */
