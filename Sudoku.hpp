@@ -29,26 +29,51 @@ class Sudoku {
             } // for() 1 ~ sudoku_size
         } // check_cross()
 
+        /*    generate and retrun a array of useage data
+         */
+        bool* check_useage( int x, int y ) {
+            bool* used = new bool[ sudoku_size+1 ] ;
+            for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ; // initialize used[]
+            check_cross( x, y, used ) ;
+            check_cell( x, y, used ) ;
+            return used ;
+        } // check_useage()
+
         /*  generate and return a random number witch must be valid
          */
-        int random_unused( bool* used ) {
+        int random_valid( int x, int y ) {
+            bool* used = check_useage( x, y ) ;
             vector<int> v ;
             for ( int i = 1 ; i < sudoku_size+1 ; ++i )
                 if ( !used[i] ) v.push_back( i ) ;
             return v.size() ? v[ rand() % v.size() ] : 0 ;
             // if there is no such number meets the rule, return -1.
-        } // random_unused()
+        } // random_valid()
 
         /*   insert a valid number at specified (x, y)
          */
         bool insert_number( int x, int y ) {
-            bool used[sudoku_size+1] ;
-            for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ;
-            check_cross( x, y, used ) ;
-            check_cell( x, y, used ) ;
-            sudoku[x][y] = random_unused( used ) ;
+            sudoku[x][y] = random_valid( x, y ) ;
             return sudoku[x][y] ;
         } // insert_number()
+
+        /*   should replace one number in x axi
+         *   so that (x, y) can insert new number
+         */
+        bool replace( int x, int y ) {
+            return false ;
+        } // replace() uncompelet
+
+        bool re_build( int x, int &y, int &retry_count ) {
+            if ( retry_count < 5 ) {
+                ++retry_count ;
+                y = -1 ; // so that after ++y it's 0
+                for ( int i = 0 ; i < sudoku_size ; ++i )
+                    sudoku[x][i] = 0 ;
+                return true ;
+            } // re-build current x-axi untill retry limit.
+            else return false ; // we failed this time.
+        }
 
         /*   main method to build the sudoku
          */
@@ -56,7 +81,12 @@ class Sudoku {
             int retry_count = 0 ;
             for ( int x = 0 ; x < sudoku_size ; ++x )
                 for ( int y = 0, retry_count = 0 ; y < sudoku_size ; ++y )
-                    if ( !insert_number( x, y ) ) {
+                    if ( !insert_number( x, y ) )
+                        if ( !replace( x, y ) )
+                            if ( !re_build( x, y, retry_count) ) return false ;
+
+                    /*
+                    {
                         if ( retry_count < 5 ) {
                             ++retry_count ;
                             y = -1 ; // so that after ++y it's 0
@@ -65,6 +95,7 @@ class Sudoku {
                         } // re-build current x-axi untill retry limit.
                         else return false ; // we failed this time.
                     } // if() fail to insert a number
+                    */
             return true ;
         } // build_sudoku()
 
@@ -75,7 +106,7 @@ class Sudoku {
                 for ( int y = 0 ; y < sudoku_size ; ++y )
                     sudoku[x][y] = 0 ;
         } // clear()
-    // end private
+    // end protected
     public:
         /*  the constructor of Sudoku class
          */
