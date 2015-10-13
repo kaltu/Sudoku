@@ -57,43 +57,29 @@ class Sudoku {
             return sudoku[x][y] ;
         } // insert_number()
 
-        /*   only need search column
+        /*   bool( random_valid() )
          */
-        void replace_cross( int y, bool* used ) {
-            for ( int i = 1 ; i < sudoku_size+1 ; ++i )
-                if ( sudoku[i-1][y] )
-                    used[ sudoku[i-1][y] ] = true ;
-        } // replace_cross()
+        bool changeable( int x, int y ) {
+            return random_valid( x, y ) ;
+        } // changeable()
 
-        /*  not need row(.ver)
-         */
-        bool* replace_useage( int x, int y ) {
-            bool* used = new bool[ sudoku_size+1 ] ;
-            for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ; // initialize used[]
-            replace_cross( y, used ) ;
-            check_cell( x, y, used ) ;
-            return used ;
-        } // replace_useage()
         /*   should replace one number in x axi
          *   so that (x, y) can insert new number
          */
         bool replace( int x, int y ) {
-            bool *okuse = replace_useage( x, y ) ;
-            for ( int i = 0 ; i < sudoku_size ; i++ ) {
-                if ( ! okuse[ sudoku[x][i] ] ) {
-                    bool *test = replace_useage( x, i ) ;
-                    int times = 0 ;
-                    for( int f = 0 ; f < sudoku_size+1; f++ )
-                        if ( ! test[f] )
-						                times++ ;
-                    if ( times > 1 ) {
+            bool *used = check_useage( x, y ) ;
+            for ( int i = 0 ; i < y ; i++ ) {
+                if ( ! used[ sudoku[x][i] ] ) {
+                    if ( changeable( x, i ) ) {
                       sudoku[x][y] = sudoku[x][i] ;
-                      insert_number( x, i );
-                      return true ;
-                    } // if
-                }
-
-            } // for
+                      int backup = sudoku[x][i] ;
+                      if ( insert_number( x, i ) )
+                          return true ;
+                      else
+                          sudoku[x][i] = backup ;
+                    } // if()
+                } // if()
+            } // for()
             return false ;
         } // replace() uncompelet
 
@@ -152,7 +138,7 @@ class Sudoku {
         int times(void) {
             return build_times ;
         }
-        
+
         bool self_check() {
             for ( int x = 0 ; x < sudoku_size ; ++x )
                 for ( int y = 0 ; y < sudoku_size ; ++ y )
