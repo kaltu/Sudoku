@@ -11,7 +11,7 @@ class Sudoku {
         /*   check if numbers were used in same cell
          */
         void check_cell( int x, int y, bool* used ) {
-            int x_start = ( x / cell_size ) * cell_size ; // perform floor division then production.
+            int x_start = ( x / cell_size ) * cell_size ;                        // perform floor division then production.
             int y_start = ( y / cell_size ) * cell_size ;
             for ( int i = x_start ; i < x_start + cell_size ; ++i )
                 for ( int j = y_start; j < y_start + cell_size ; ++j )
@@ -33,8 +33,20 @@ class Sudoku {
          */
         bool* check_useage( int x, int y ) {
             bool* used = new bool[ sudoku_size+1 ] ;
-            for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ; // initialize used[]
+            for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ;        // initialize used[]
             check_cross( x, y, used ) ;
+            check_cell( x, y, used ) ;
+            return used ;
+        } // check_useage()
+
+        /*    generate and retrun an array of useage data
+         */
+        bool* check_column( int x, int y ) {
+            bool* used = new bool[ sudoku_size+1 ] ;
+            for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ;        // initialize used[]
+            for ( int i = 1 ; i < sudoku_size+1 ; ++i )
+                if ( sudoku[i-1][y] )
+                    used[ sudoku[i-1][y] ] = true ;
             check_cell( x, y, used ) ;
             return used ;
         } // check_useage()
@@ -53,8 +65,13 @@ class Sudoku {
         /*   insert a valid number at specified (x, y)
          */
         bool insert_number( int x, int y ) {
-            sudoku[x][y] = random_valid( x, y ) ;
-            return sudoku[x][y] ;
+            int num = random_valid( x, y ) ;                                     // get a random number witch is available to ( x, y )
+            if ( num ) {                                                         // if number found ( num != 0 )
+                sudoku[x][y] = num ;                                             // set it to sudoku[x][y]
+                return true ;                                                    // return success
+            }
+            else                                                                 // else no such number ( num == 0 )
+                return false ;                                                   // return failure
         } // insert_number()
 
         /*   bool( random_valid() )
@@ -67,20 +84,16 @@ class Sudoku {
          *   so that (x, y) can insert new number
          */
         bool replace( int x, int y ) {
-            bool *used = check_useage( x, y ) ;
-            for ( int i = 0 ; i < y ; i++ ) {
-                if ( ! used[ sudoku[x][i] ] ) {
-                    if ( changeable( x, i ) ) {
-                      sudoku[x][y] = sudoku[x][i] ;
-                      int backup = sudoku[x][i] ;
-                      if ( insert_number( x, i ) )
-                          return true ;
-                      else
-                          sudoku[x][i] = backup ;
-                    } // if()
+            bool *used = check_column( x, y ) ;                                  // check useage data at ( x, y )
+            for ( int i = 0 ; i < y ; i++ )                                      // for numbers in range ( x, 0 ) ~ ( x, y-1 )
+                if ( ! used[ sudoku[x][i] ] && changeable( x, i ) ) {            // if number at ( x, i ) is available at ( x, y ) and is changeable
+//                    cout << "swap ( " << x << ", " << i << " ) with ( "
+//                         << x << ", " << y << " )" << endl ;
+                    sudoku[x][y] = sudoku[x][i] ;                                // the number at ( x, i ) is now the number of ( x, y )
+                    insert_number( x, i ) ;                                      // give ( x, i ) new number
+                    return true ;                                                // return successfally find a number for ( x, y )
                 } // if()
-            } // for()
-            return false ;
+            return false ;                                                       // failed to find a number for ( x, y )
         } // replace() uncompelet
 
         bool re_build( int x, int &y, int &retry_count ) {
@@ -119,10 +132,10 @@ class Sudoku {
         /*  the constructor of Sudoku class
          */
         Sudoku( int size = 4 ) {
-            if ( size != 9 ) size = 4 ; // only 4*4 or 9*9 sudoku is allowed
+            if ( size != 9 ) size = 4 ;                                          // only 4*4 or 9*9 sudoku is allowed
             sudoku_size = size ;
             cell_size = size % 3 ? 2 : 3 ;
-            sudoku = new int*[ size ] ; // sudoku is a pointer of integer pointer (int**)
+            sudoku = new int*[ size ] ;                                          // sudoku is a pointer of integer pointer (int**)
             for ( int i = 0 ; i < size ; ++i )
                 sudoku[i] = new int[ size ] ;
             int times = 0 ;
@@ -159,7 +172,7 @@ class Sudoku {
         /*   print out the cell witch specified (x, y) located.
          */
         void print_cell( int x, int y ) {
-            int x_start = ( x / cell_size ) * cell_size ; // perform floor division then production.
+            int x_start = ( x / cell_size ) * cell_size ;                        // perform floor division then production.
             int y_start = ( y / cell_size ) * cell_size ;
             for ( int i = x_start ; i < x_start + cell_size ; ++i ) {
                 for ( int j = y_start; j < y_start + cell_size ; ++j )
