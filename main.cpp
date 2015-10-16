@@ -11,6 +11,8 @@ int main( int argc, char** argv ) {
     Sudoku sudoku(9) ;
     sudoku.print_sudoku() ;
     cout << "build in " << sudoku.times() << " times." << endl ;
-    cout << "self check: " << ( sudoku.self_check() ? "success" : "failed" ) ;
+    cout << "self check: " << ( sudoku.self_check() ? "success" : "failed" ) << "\n" ;
+    sudoku.copy2() ;
+    sudoku.print_copy() ;
     return 0 ;
 } // main
