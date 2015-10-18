@@ -3,12 +3,14 @@
 
 class Sudoku {
     protected:
-        int build_times ;
-        int sudoku_size ;
-        int cell_size ;
+        int build_times, sudoku_size, cell_size ;
         int** sudoku ;
+        string sudoku_str ;
+        std::size_t sudoku_hash ;                                                // (size_t) means (unsigned long long int)
         int copy[9][9] ;
         enum Hardness { simple = 1, medium = 2, hard = 3 };
+
+        /* * * * * * * * * * builders * * * * * * * * * * */
 
         /*   check if numbers were used in same cell
          */
@@ -117,9 +119,13 @@ class Sudoku {
                 for ( int y = 0, retry_count = 0 ; y < sudoku_size ; ++y )
                     if ( !insert_number( x, y ) )
                         if ( !replace( x, y ) )
-                            if ( !re_build( x, y, retry_count) ) return false ;
+                            if ( !re_build( x, y, retry_count) )
+                                return false ;
             return true ;
         } // build_sudoku()
+
+        /* * * * * * * * * * builders * * * * * * * * * * */
+        /* * * * * * * * * * * commands * * * * * * * * * * * */
 
         /*   clear or initialize the sudoku
          */
@@ -128,6 +134,7 @@ class Sudoku {
                 for ( int y = 0 ; y < sudoku_size ; ++y )
                     sudoku[x][y] = 0 ;
         } // clear()
+        
         /*
         dig dig dig
         range hardness * (1~3)
@@ -195,8 +202,27 @@ class Sudoku {
             } // for() 1 ~ sudoku_size
         } // check_cross()
 
+        void set_hash(void) {
+            std::hash<std::string> hasher ;
+            sudoku_hash = hasher( sudoku_str ) ;
+        } // set_hast()
+
+        void set_str(void) {
+            string str = "" ;
+            stringstream ss ;
+            for ( int x = 0 ; x < sudoku_size ; ++x )
+                for ( int y = 0 ; y < sudoku_size ; ++y )
+                    ss << sudoku[x][y] ;
+            ss >> str ;
+            sudoku_str = str ;
+        } // set_str()
+
+        /* * * * * * * * * * * commands * * * * * * * * * * * */
+
     // end protected
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     public:
+        /* * * * * * * * * * constructors * * * * * * * * * * */
         /*  the constructor of Sudoku class
          */
         Sudoku( int size = 4 ) {
@@ -212,15 +238,14 @@ class Sudoku {
                 clear() ;
             } while( !build_sudoku() ) ; // rebuild until success
             build_times = times ;
+            set_str() ;
+            set_hash() ;
         } // constructor of Sudoku class
 
-        /*  get how many times retried to build this sudoku
-         */
-        int times(void) {
-            return build_times ;
-        }
+        /* * * * * * * * * * constructors * * * * * * * * * * */
+        /* * * * * * * * * * * commands * * * * * * * * * * * */
 
-        bool self_check() {
+        bool self_check(void) {
             for ( int x = 0 ; x < sudoku_size ; ++x )
                 for ( int y = 0 ; y < sudoku_size ; ++ y )
                     if ( !sudoku[x][y] ) return false ;
@@ -248,6 +273,46 @@ class Sudoku {
                 cout << endl ;
             } // for()
         } // print_cell()
+
+        void save(void) {
+            stringstream ss ;
+            ss << "sudoku\\" << sudoku_hash << ".sudoku" ;
+            string name = "" ;
+            ss >> name ;
+            try {
+                fstream file ;
+                file.open( name.c_str(), ios::out | ios::trunc ) ;
+                if ( !file ) {
+                    cout << "error: failed to open '" << name << "'" << endl ;
+                    return ;
+                }
+                string str = sudoku_str ;
+                file.write( str.c_str(), str.size() ) ;
+                file.close() ;
+            } // try
+            catch ( exception e ) {
+                cout << "error: " << e.what() << endl ;
+            } // catch()
+        } // save sodoku
+
+        /* * * * * * * * * * * commands * * * * * * * * * * * */
+        /* * * * * * * * * * * getters * * * * * * * * * * * */
+
+        std::size_t hash(void) {
+            return sudoku_hash ;
+        } // hash getter
+
+        /*  get how many times retried to build this sudoku
+         */
+        int times(void) {
+            return build_times ;
+        } // build_times getter
+
+        string str(void) {
+            return sudoku_str ;
+        } // str getter
+
+        /* * * * * * * * * * * getters * * * * * * * * * * * */
 
         void copy2() {
             copyarray() ;
