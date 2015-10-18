@@ -16,6 +16,9 @@ int main( int argc, char** argv ) {
     cout << "self check: " << ( sudoku.self_check() ? "success" : "failed" ) << endl ;
     cout << "string: " << endl << sudoku.str() << endl ;
     cout << "HASH: " << sudoku.hash() << endl ;
-    sudoku.save() ;
+    //sudoku.save() ;
+    cout << "self check: " << ( sudoku.self_check() ? "success" : "failed" ) << "\n" ;
+    sudoku.copy2() ;
+    sudoku.print_copy() ;
     return 0 ;
 } // main
