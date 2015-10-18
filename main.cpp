@@ -6,7 +6,7 @@
 #include <vector>
 using namespace std ;
 
-#include "Sudoku.hpp"
+#include "Manager.hpp"
 
 int main( int argc, char** argv ) {
     srand(time(NULL)) ;
