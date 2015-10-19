@@ -12,6 +12,7 @@ int main( int argc, char** argv ) {
     srand(time(NULL)) ;
     Manager manager ;
     manager.print_sudokus() ;
+    manager.set_hardness();
     /*
     Sudoku sudoku(9) ;
     sudoku.print_sudoku() ;
