@@ -10,12 +10,11 @@ using namespace std ;
 
 class Sudoku {
     protected:
+        enum Hardness { simple = 1, medium = 2, hard = 3 };
         int build_times, sudoku_size, cell_size ;
         int** sudoku ;
         string sudoku_str, sudoku_hash_str, sudoku_name ;
         size_t sudoku_hash ;                                                     // (size_t) means (unsigned long long int)
-        int copy[9][9] ;
-        enum Hardness { simple = 1, medium = 2, hard = 3 };
 
         /* * * * * * * * * * builders * * * * * * * * * * */
 
@@ -151,10 +150,10 @@ class Sudoku {
           for( int i = 0 ; i < hole ; i++ ) {
             int x = ( rand() % 9 ) ;
             int y = ( rand() % 9 ) ;
-            int r = copy[x][y] ;
-            setcopy( & copy[x][y], 0 ) ;
+            int r = sudoku[x][y] ;
+            sudoku[x][y] = 0 ;
             if ( !canDig( x, y) ) {
-              setcopy( & copy[x][y], r ) ;
+              sudoku[x][y] = r ;
               i-- ;
             } // if
           } // for()
@@ -167,47 +166,14 @@ class Sudoku {
         bool canDig( int x, int y ) {
             bool* used = new bool[ sudoku_size+1 ] ;
             for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ;
-            check_cellcopy( x, y, used ) ;
-            check_crosscopy( x, y, used ) ;
+            check_cell( x, y, used ) ;
+            check_cross( x, y, used ) ;
             int solution = 0 ;
             for ( int i = 1 ; i < sudoku_size+1 ; i++ )
                 if ( ! used[i] ) solution++ ;
             if ( solution == 1 ) return true ;
             return false ;
         } // canDig()
-        /*
-        copy sudoku to copy[9][9]
-        */
-        void copyarray() {
-            for( int x = 0 ; x < sudoku_size ; x++ )
-                for( int y = 0 ; y < sudoku_size ; y++ )
-                    setcopy( & copy[x][y], sudoku[x][y] ) ;
-        } // copyarray()
-        /*
-        protected to set
-        */
-        void setcopy( int *copy1, int num ) {
-            *copy1 = num ;
-        } // setcopy()
-
-        void check_cellcopy( int x, int y, bool* used ) {
-            int x_start = ( x / cell_size ) * cell_size ;                        // perform floor division then production.
-            int y_start = ( y / cell_size ) * cell_size ;
-            for ( int i = x_start ; i < x_start + cell_size ; ++i )
-                for ( int j = y_start; j < y_start + cell_size ; ++j )
-                    if ( copy[i][j] ) used[ copy[i][j] ] = true ;
-        } // check_cell()
-
-        /*   check if numbers were used in same column and same row
-         */
-        void check_crosscopy( int x, int y, bool* used ) {
-            for ( int i = 1 ; i < sudoku_size+1 ; ++i ) {
-                if ( copy[x][i-1] )
-                    used[ copy[x][i-1] ] = true ;
-                if ( copy[i-1][y] )
-                    used[ copy[i-1][y] ] = true ;
-            } // for() 1 ~ sudoku_size
-        } // check_cross()
 
         void set_hash(void) {
             std::hash<string> hasher ;
@@ -291,10 +257,6 @@ class Sudoku {
             sudoku_hash_str = Other.sudoku_hash_str ;
             sudoku_name = Other.sudoku_name ;
             sudoku_hash = Other.sudoku_hash ;
-
-            for ( int x = 0 ; x < sudoku_size ; ++x )
-                for ( int y = 0 ; y < sudoku_size ; ++ y )
-                    copy[x][y] = Other.copy[x][y] ;
 
             return *this ;
         } // operator overloading =
@@ -385,19 +347,21 @@ class Sudoku {
         }
 
         /* * * * * * * * * * * getters * * * * * * * * * * * */
+        void set_hardness( Hardness hardness ) {
+            int select = 0 ;
+            cin >> select ;
+            if ( select == 1 ) hardness = simple ;
+            if ( select == 2 ) hardness = medium ;
+            if ( select == 3 ) hardness = hard ;
+        } // set_hardness()
 
-        void copy2() {
-            copyarray() ;
-            dig(hard);
-        } // copy2()
+        void action() {
+            Hardness hardness ;
+            set_hardness( hardness );
+            dig( hardness ) ;
+            print_sudoku() ;
+        } // action()
 
-        void print_copy(void) {
-            for ( int x = 0 ; x < sudoku_size ; ++x ) {
-                for ( int y = 0 ; y < sudoku_size ; ++y )
-                    cout << copy[x][y] << " " ;
-                cout << endl ;
-            } // for()
-        } // print_sudoku()
     // end public
 }; // class Sudoku
 
