@@ -12,7 +12,7 @@ using namespace std ;
 
 class Manager {
     protected:
-        Sudoku* s ;                                                              // current sudoku
+        Sudoku* s ;
         list<Sudoku*> sudoku_pointer_list ;
         list<string> file_list ;
         string list_file_name ;
@@ -100,13 +100,6 @@ class Manager {
                     cout << endl ;
                 } ) ;
         } // print_sudokus()
-
-        void set_hardness( ) {
-            Sudoku new_sudoku(9) ;
-            new_sudoku= *s ;
-            //new_sudoku.set_hardness( Hardness hardness ) ;
-            new_sudoku.action() ;
-        }
 
     // end public
 }; // class Manger
