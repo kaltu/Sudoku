@@ -1,12 +1,19 @@
 #ifndef SUDOKU_HPP_INCLUDED
 #define SUDOKU_HPP_INCLUDED
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <sys/stat.h>
+using namespace std ;
+
 class Sudoku {
     protected:
         int build_times, sudoku_size, cell_size ;
         int** sudoku ;
-        string sudoku_str ;
-        std::size_t sudoku_hash ;                                                // (size_t) means (unsigned long long int)
+        string sudoku_str, sudoku_hash_str, sudoku_name ;
+        size_t sudoku_hash ;                                                     // (size_t) means (unsigned long long int)
         int copy[9][9] ;
         enum Hardness { simple = 1, medium = 2, hard = 3 };
 
@@ -134,7 +141,7 @@ class Sudoku {
                 for ( int y = 0 ; y < sudoku_size ; ++y )
                     sudoku[x][y] = 0 ;
         } // clear()
-        
+
         /*
         dig dig dig
         range hardness * (1~3)
@@ -203,8 +210,11 @@ class Sudoku {
         } // check_cross()
 
         void set_hash(void) {
-            std::hash<std::string> hasher ;
+            std::hash<string> hasher ;
             sudoku_hash = hasher( sudoku_str ) ;
+            stringstream ss ;
+            ss << sudoku_hash ;
+            ss >> sudoku_hash_str ;
         } // set_hast()
 
         void set_str(void) {
@@ -240,9 +250,56 @@ class Sudoku {
             build_times = times ;
             set_str() ;
             set_hash() ;
-        } // constructor of Sudoku class
+        } // constructor by specified size
+
+        Sudoku( string str ) {
+            if ( str.size() == 16 ) sudoku_size = 4 ;
+            else sudoku_size = 9 ;
+            cell_size = sudoku_size % 3 ? 2 : 3 ;
+            sudoku = new int*[ sudoku_size ] ;                                          // sudoku is a pointer of integer pointer (int**)
+            for ( int i = 0 ; i < sudoku_size ; ++i )
+                sudoku[i] = new int[ sudoku_size ] ;
+            build_times = 0 ;
+            stringstream ss(str);
+            char current ;
+            for ( int x = 0 ; x < sudoku_size ; ++x )
+                for ( int y = 0 ; y < sudoku_size ; ++y ) {
+                    ss >> current ;
+                    sudoku[x][y] = current - '0' ;                               // ascii - '0' = integer
+                }
+            set_str() ;
+            set_hash() ;
+        } // constructor by string representation of other Sudoku object
+
+        Sudoku( const Sudoku& other ) {
+            *this = other ;
+        } // constuctor by other Sudoku object
 
         /* * * * * * * * * * constructors * * * * * * * * * * */
+        /* * * * * * * * * * * operators * * * * * * * * * * * */
+
+        Sudoku& operator=( const Sudoku& Other ) {
+            build_times = Other.build_times ;
+            sudoku_size = Other.sudoku_size ;
+            cell_size = Other.cell_size ;
+
+            for ( int x = 0 ; x < sudoku_size ; ++x )
+                for ( int y = 0 ; y < sudoku_size ; ++ y )
+                    sudoku[x][y] = Other.sudoku[x][y] ;
+
+            sudoku_str = Other.sudoku_str ;
+            sudoku_hash_str = Other.sudoku_hash_str ;
+            sudoku_name = Other.sudoku_name ;
+            sudoku_hash = Other.sudoku_hash ;
+
+            for ( int x = 0 ; x < sudoku_size ; ++x )
+                for ( int y = 0 ; y < sudoku_size ; ++ y )
+                    copy[x][y] = Other.copy[x][y] ;
+
+            return *this ;
+        } // operator overloading =
+
+        /* * * * * * * * * * * operators * * * * * * * * * * * */
         /* * * * * * * * * * * commands * * * * * * * * * * * */
 
         bool self_check(void) {
@@ -274,20 +331,23 @@ class Sudoku {
             } // for()
         } // print_cell()
 
-        void save(void) {
+        void save( string filename = "", string dirname = "sudoku\\" ) {
+            if ( filename == "" ) filename = hash_str() ;
+            // ************************ // may be buggy
+            struct stat sb ;
+            if ( ! ( stat( dirname.c_str(), &sb ) == 0 && S_ISDIR( sb.st_mode ) ))
+                system( "md sudoku" ) ;
+            // ************************ // may be buggy
             stringstream ss ;
-            ss << "sudoku\\" << sudoku_hash << ".sudoku" ;
-            string name = "" ;
-            ss >> name ;
+            ss << dirname << filename << ".sudoku" ;
+            sudoku_name = ss.str() ;
             try {
-                fstream file ;
-                file.open( name.c_str(), ios::out | ios::trunc ) ;
+                ofstream file( sudoku_name ) ;
                 if ( !file ) {
-                    cout << "error: failed to open '" << name << "'" << endl ;
+                    cout << "error: failed to open '" << sudoku_name << "'" << endl ;
                     return ;
                 }
-                string str = sudoku_str ;
-                file.write( str.c_str(), str.size() ) ;
+                file << sudoku_str ;
                 file.close() ;
             } // try
             catch ( exception e ) {
@@ -298,9 +358,13 @@ class Sudoku {
         /* * * * * * * * * * * commands * * * * * * * * * * * */
         /* * * * * * * * * * * getters * * * * * * * * * * * */
 
-        std::size_t hash(void) {
+        size_t hash(void) {
             return sudoku_hash ;
         } // hash getter
+
+        string hash_str(void) {
+            return sudoku_hash_str ;
+        }
 
         /*  get how many times retried to build this sudoku
          */
@@ -311,6 +375,14 @@ class Sudoku {
         string str(void) {
             return sudoku_str ;
         } // str getter
+
+        string file_name(void) {
+            return sudoku_name ;
+        } // file_name getter
+
+        int size(void) {
+            return sudoku_size ;
+        }
 
         /* * * * * * * * * * * getters * * * * * * * * * * * */
 
