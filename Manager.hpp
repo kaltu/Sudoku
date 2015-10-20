@@ -94,7 +94,7 @@ class Manager {
             if ( file.is_open() ) load_sudoku_list() ;
             else create_sudoku_list() ;
         } // constructor of Manager class
-        
+
         Manager( int size ) {
         	manager_size = size ;
             s = NULL ;

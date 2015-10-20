@@ -159,7 +159,6 @@ class Sudoku {
               i-- ;
             } // if
           } // for()
-
         } // dig()
         /*
         if solution == 1 return true
@@ -353,7 +352,7 @@ class Sudoku {
         /* * * * * * * * * * * getters * * * * * * * * * * * */
         void set_hardness( Hardness hardness ) {
         	  this->sudoku_hardness = hardness ;
-            dig() ;
+              dig() ;
         } // set_hardness()
 
     // end public
