@@ -8,9 +8,10 @@
 #include <sys/stat.h>
 using namespace std ;
 
+enum Hardness { simple = 2, medium = 4, hard = 10 };
 class Sudoku {
     protected:
-        enum Hardness { simple = 1, medium = 2, hard = 3 };
+    	Hardness hardness ;
         int build_times, sudoku_size, cell_size ;
         int** sudoku ;
         string sudoku_str, sudoku_hash_str, sudoku_name ;
@@ -147,12 +148,13 @@ class Sudoku {
         */
         void dig( Hardness hardness ) {
           int hole = sudoku_size > 4 ? hardness * sudoku_size : hardness * cell_size ;
+          //++hole ;
           for( int i = 0 ; i < hole ; i++ ) {
-            int x = ( rand() % 9 ) ;
-            int y = ( rand() % 9 ) ;
+            int x = ( rand() % sudoku_size ) ;
+            int y = ( rand() % sudoku_size ) ;
             int r = sudoku[x][y] ;
             sudoku[x][y] = 0 ;
-            if ( !canDig( x, y) ) {
+            if ( not diggable( x, y) ) {
               sudoku[x][y] = r ;
               i-- ;
             } // if
@@ -163,7 +165,7 @@ class Sudoku {
         if solution == 1 return true
         not 1 return false
         */
-        bool canDig( int x, int y ) {
+        bool diggable( int x, int y ) {
             bool* used = new bool[ sudoku_size+1 ] ;
             for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ;
             check_cell( x, y, used ) ;
@@ -171,9 +173,9 @@ class Sudoku {
             int solution = 0 ;
             for ( int i = 1 ; i < sudoku_size+1 ; i++ )
                 if ( ! used[i] ) solution++ ;
-            if ( solution == 1 ) return true ;
+            if ( 0 < solution && solution <= hardness ) return true ;
             return false ;
-        } // canDig()
+        } // diggable()
 
         void set_hash(void) {
             std::hash<string> hasher ;
@@ -274,11 +276,10 @@ class Sudoku {
         /*   print out whole sudoku
          */
         void print_sudoku(void) {
-            for ( int x = 0 ; x < sudoku_size ; ++x ) {
+            for ( int x = 0 ; x < sudoku_size ; cout << endl, ++x )
                 for ( int y = 0 ; y < sudoku_size ; ++y )
-                    cout << sudoku[x][y] << " " ;
-                cout << endl ;
-            } // for()
+                	if ( sudoku[x][y] ) cout << sudoku[x][y] << " " ;
+                    else cout << "  " ;
         } // print_sudoku()
 
         /*   print out the cell witch specified (x, y) located.
@@ -348,19 +349,9 @@ class Sudoku {
 
         /* * * * * * * * * * * getters * * * * * * * * * * * */
         void set_hardness( Hardness hardness ) {
-            int select = 0 ;
-            cin >> select ;
-            if ( select == 1 ) hardness = simple ;
-            if ( select == 2 ) hardness = medium ;
-            if ( select == 3 ) hardness = hard ;
-        } // set_hardness()
-
-        void action() {
-            Hardness hardness ;
-            set_hardness( hardness );
+        	this->hardness = hardness ;
             dig( hardness ) ;
-            print_sudoku() ;
-        } // action()
+        } // set_hardness()
 
     // end public
 }; // class Sudoku

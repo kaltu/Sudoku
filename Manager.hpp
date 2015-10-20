@@ -12,6 +12,7 @@ using namespace std ;
 
 class Manager {
     protected:
+    	int manager_size ;
         Sudoku* s ;                                                              // current sudoku
         list<Sudoku*> sudoku_pointer_list ;
         list<string> file_list ;
@@ -48,7 +49,7 @@ class Manager {
             if ( !s ) s = temp ;
         } // add_sudoku to Manager
 
-        void create_sudoku_list(void) {
+        void create_sudoku_list( int size = 9 ) {
             cout << "creating file: " << list_file_name << endl ;
             // ************************ // may be buggy
             struct stat sb ;
@@ -56,7 +57,7 @@ class Manager {
                 system( "md sudoku" ) ;
             // ************************ // may be buggy
             ofstream file( list_file_name ) ;
-            new_sudoku() ;
+            new_sudoku( size ) ;
         } // create sudoku_list()
 
         void load_sudoku_list(void) {
@@ -86,11 +87,21 @@ class Manager {
         /*  the constructor of Sudoku class
          */
         Manager() {
+        	manager_size = 9 ;
             s = NULL ;
             list_file_name = "sudoku\\sudokus.list" ;
             ifstream file( list_file_name ) ;
             if ( file.is_open() ) load_sudoku_list() ;
             else create_sudoku_list() ;
+        } // constructor of Manager class
+        
+        Manager( int size ) {
+        	manager_size = size ;
+            s = NULL ;
+            list_file_name = "sudoku\\sudokus.list" ;
+            ifstream file( list_file_name ) ;
+            if ( file.is_open() ) load_sudoku_list() ;
+            else create_sudoku_list( size ) ;
         } // constructor of Manager class
 
         void print_sudokus( void ) {
@@ -102,11 +113,25 @@ class Manager {
         } // print_sudokus()
 
         void set_hardness( ) {
-            Sudoku new_sudoku(9) ;
-            new_sudoku= *s ;
-            //new_sudoku.set_hardness( Hardness hardness ) ;
-            new_sudoku.action() ;
-        }
+            Sudoku new_sudoku( manager_size ) ;
+            new_sudoku = *s ;
+            Hardness hardness ;
+            cout << "Input hardness:" << endl << ">>> " ;
+            int int_hardness ;
+            cin >> int_hardness ;
+            if ( int_hardness == 1 )
+                hardness = simple ;
+            else if ( int_hardness == 2 )
+                hardness = medium ;
+            else if ( int_hardness == 3 )
+                hardness = hard ;
+            else {
+            	cout << "error: " << int_hardness << endl ;
+            	return ;
+			}
+            new_sudoku.set_hardness( hardness ) ;
+            new_sudoku.print_sudoku() ;
+        } // set_hardness to current sudoku object
 
     // end public
 }; // class Manger
