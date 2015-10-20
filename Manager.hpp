@@ -103,7 +103,7 @@ class Manager {
 
         void set_hardness( ) {
             Sudoku new_sudoku(9) ;
-            new_sudoku= *s ;
+            new_sudoku = *s ;
             //new_sudoku.set_hardness( Hardness hardness ) ;
             new_sudoku.action() ;
         }

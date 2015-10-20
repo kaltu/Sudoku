@@ -146,18 +146,17 @@ class Sudoku {
         range hardness * (1~3)
         */
         void dig( Hardness hardness ) {
-          int hole = sudoku_size > 4 ? hardness * sudoku_size : hardness * cell_size ;
-          for( int i = 0 ; i < hole ; i++ ) {
-            int x = ( rand() % 9 ) ;
-            int y = ( rand() % 9 ) ;
-            int r = sudoku[x][y] ;
-            sudoku[x][y] = 0 ;
-            if ( !canDig( x, y) ) {
-              sudoku[x][y] = r ;
-              i-- ;
-            } // if
-          } // for()
-
+            int hole = sudoku_size > 4 ? hardness * sudoku_size : hardness * cell_size ;
+            for( int i = 0 ; i < hole ; i++ ) {
+                int x = ( rand() % 9 ) ;
+                int y = ( rand() % 9 ) ;
+                int r = sudoku[x][y] ;
+                sudoku[x][y] = 0 ;
+                if ( !canDig( x, y) ) {
+                    sudoku[x][y] = r ;
+                    i-- ;
+                } // if
+            } // for()
         } // dig()
         /*
         if solution == 1 return true
@@ -347,7 +346,7 @@ class Sudoku {
         }
 
         /* * * * * * * * * * * getters * * * * * * * * * * * */
-        void set_hardness( Hardness hardness ) {
+        void set_hardness( Hardness &hardness ) {
             int select = 0 ;
             cin >> select ;
             if ( select == 1 ) hardness = simple ;
