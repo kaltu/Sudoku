@@ -11,7 +11,7 @@ using namespace std ;
 enum Hardness { simple = 2, medium = 4, hard = 10 };
 class Sudoku {
     protected:
-    	Hardness hardness ;
+    	  Hardness sudoku_hardness ;
         int build_times, sudoku_size, cell_size ;
         int** sudoku ;
         string sudoku_str, sudoku_hash_str, sudoku_name ;
@@ -146,8 +146,8 @@ class Sudoku {
         dig dig dig
         range hardness * (1~3)
         */
-        void dig( Hardness hardness ) {
-          int hole = sudoku_size > 4 ? hardness * sudoku_size : hardness * cell_size ;
+        void dig(void) {
+          int hole = sudoku_size > 4 ? sudoku_hardness * sudoku_size : sudoku_hardness * cell_size ;
           //++hole ;
           for( int i = 0 ; i < hole ; i++ ) {
             int x = ( rand() % sudoku_size ) ;
@@ -173,7 +173,7 @@ class Sudoku {
             int solution = 0 ;
             for ( int i = 1 ; i < sudoku_size+1 ; i++ )
                 if ( ! used[i] ) solution++ ;
-            if ( 0 < solution && solution <= hardness ) return true ;
+            if ( 0 < solution && solution <= sudoku_hardness ) return true ;
             return false ;
         } // diggable()
 
@@ -218,6 +218,7 @@ class Sudoku {
             build_times = times ;
             set_str() ;
             set_hash() ;
+            hardness = simple ;
         } // constructor by specified size
 
         Sudoku( string str ) {
@@ -237,6 +238,7 @@ class Sudoku {
                 }
             set_str() ;
             set_hash() ;
+            hardness = simple ;
         } // constructor by string representation of other Sudoku object
 
         Sudoku( const Sudoku& other ) {
@@ -259,6 +261,7 @@ class Sudoku {
             sudoku_hash_str = Other.sudoku_hash_str ;
             sudoku_name = Other.sudoku_name ;
             sudoku_hash = Other.sudoku_hash ;
+            sudoku_hardness = Other.sudoku_hardness ;
 
             return *this ;
         } // operator overloading =
@@ -349,8 +352,8 @@ class Sudoku {
 
         /* * * * * * * * * * * getters * * * * * * * * * * * */
         void set_hardness( Hardness hardness ) {
-        	this->hardness = hardness ;
-            dig( hardness ) ;
+        	  this->sudoku_hardness = hardness ;
+            dig() ;
         } // set_hardness()
 
     // end public
