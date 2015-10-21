@@ -7,6 +7,7 @@
 using namespace std ;
 
 #include "Manager.hpp"
+#include "Player.hpp"
 
 void play() ;
 void manage() ;
@@ -17,15 +18,15 @@ void play(void) {
 } // player interface
 
 void manage(void) {
-    cout << "¤Ñ¦a¦³¥¿®ð" << endl << ">>> " ;
+    cout << "ï¿½Ñ¦aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << endl << ">>> \n" ;
     string answer ;
     cin >> answer ;
-    if ( answer != "ÂøµM½á¬y§Î" ) return start() ;
+    if ( answer != "ï¿½ï¿½ï¿½Mï¿½ï¿½ï¿½yï¿½ï¿½" ) return start() ;
 
 } // manager interface
 
 void start(void) {
-    cout << "¨ÓªÌ¦ó¤H¡I" << endl << ">>> " ;
+    cout << "ï¿½ÓªÌ¦ï¿½ï¿½Hï¿½I" << endl << ">>> \n" ;
     short opt ;
     cin >> opt ;
     if ( opt == 1 )
@@ -39,8 +40,11 @@ void start(void) {
 int main( int argc, char** argv ) {
     srand(time(NULL)) ;
     Manager manager ;
-    //manager.print_sudokus() ;
-    //manager.set_hardness();
+    manager.print_sudokus() ;
+    Sudoku a( 9 ) ;
+    manager.set_hardness( 1, a );
+    //Player play ;
+    //play.doexercise( a ) ;
     /*
     Sudoku sudoku(9) ;
     sudoku.print_sudoku() ;

@@ -217,7 +217,7 @@ class Sudoku {
             build_times = times ;
             set_str() ;
             set_hash() ;
-            hardness = simple ;
+            sudoku_hardness = simple ;
         } // constructor by specified size
 
         Sudoku( string str ) {
@@ -237,7 +237,7 @@ class Sudoku {
                 }
             set_str() ;
             set_hash() ;
-            hardness = simple ;
+            ///hardness = simple ;
         } // constructor by string representation of other Sudoku object
 
         Sudoku( const Sudoku& other ) {
