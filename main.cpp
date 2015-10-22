@@ -80,18 +80,6 @@ int main( int argc, char** argv ) {
     srand(time(NULL)) ;
     Player player1 ;
     player1.doexercise() ;
-    /*
-    Sudoku sudoku(9) ;
-    sudoku.print_sudoku() ;
-    cout << "build in " << sudoku.times() << " times." << endl ;
-    cout << "self check: " << ( sudoku.self_check() ? "success" : "failed" ) << endl ;
-    cout << "string: " << endl << sudoku.str() << endl ;
-    cout << "HASH: " << sudoku.hash() << endl ;
-    sudoku.save() ;
-    //cout << "self check: " << ( sudoku.self_check() ? "success" : "failed" ) << "\n" ;
-    //sudoku.copy2() ;
-    //sudoku.print_copy() ;
-    */
     Manager manager ;
     manager.print_rank() ;
     //start( manager ) ;
