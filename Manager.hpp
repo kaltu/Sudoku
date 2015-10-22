@@ -141,7 +141,7 @@ class Manager {
                 return ;
             }
             print_sudoku() ;
-            cout << "Do you want to delete this(as above) sudoku? (y/n)" << endl << ">>> " ;
+            cout << "Do you want to delete this(as above) sudoku? (y/N)" << endl << ">>> " ;
             string ans ;
             cin >> ans ;
             if ( !( ans == "Y" || ans == "y" ) ) return ;
