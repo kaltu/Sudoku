@@ -149,6 +149,7 @@ class Sudoku {
         void dig(void) {
           int hole = sudoku_size > 4 ? sudoku_hardness * sudoku_size : sudoku_hardness * cell_size ;
           //++hole ;
+          hole = 1 ;
           for( int i = 0 ; i < hole ; i++ ) {
             int x = ( rand() % sudoku_size ) ;
             int y = ( rand() % sudoku_size ) ;
@@ -198,7 +199,11 @@ class Sudoku {
             stringstream ss ;
             ss << "sudoku\\" << sudoku_hash_str << ".sudoku" ;
             sudoku_name = ss.str() ;
-        }
+        } // set_name()
+
+        void set_num( int x, int y, int num ) {
+          sudoku[x][y] = num ;
+        } // set_num()
 
         /* * * * * * * * * * * commands * * * * * * * * * * * */
 
@@ -223,10 +228,7 @@ class Sudoku {
             build_times = times ;
             set_str() ;
             set_hash() ;
-<<<<<<< HEAD
-=======
             set_name() ;
->>>>>>> refs/remotes/origin/master
             sudoku_hardness = simple ;
         } // constructor by specified size
 
@@ -247,12 +249,8 @@ class Sudoku {
                 }
             set_str() ;
             set_hash() ;
-<<<<<<< HEAD
-            ///hardness = simple ;
-=======
             set_name() ;
             sudoku_hardness = simple ;
->>>>>>> refs/remotes/origin/master
         } // constructor by string representation of other Sudoku object
 
         Sudoku( const Sudoku& other ) {
@@ -386,6 +384,14 @@ class Sudoku {
             check_cross( x, y, used ) ;
             return used[number] ;
         } // correct()
+
+        void set_array( int x, int y, int num ) {
+          set_num( x, y, num ) ;
+        } // set_array()
+
+        int rtn_sudoku( int x, int y ) {
+          return sudoku[x][y] ;
+        } // rtn_sudoku()
     // end public
 }; // class Sudoku
 

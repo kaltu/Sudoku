@@ -93,10 +93,6 @@ class Manager {
         }
 
         void destructor() {
-            if ( s != nullptr ) {
-                delete s ;
-                s = nullptr ;
-            }
             for_each( sudoku_pointer_list.begin(), sudoku_pointer_list.end(), [](Sudoku* p){
                 if ( p != nullptr ) {
                     delete p ;
@@ -214,6 +210,10 @@ class Manager {
 
         void clear_screen() {
             system( "cls" ) ;
+        }
+
+        Sudoku* request_quesion(void) {
+          return sudoku_pointer_list.at( rand() % sudoku_pointer_list.size() ) ;
         }
 
         /* * * * * * * * * * * methods * * * * * * * * * * * */

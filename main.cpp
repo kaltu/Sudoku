@@ -78,8 +78,13 @@ void start( Manager &manager ) {
 
 int main( int argc, char** argv ) {
     srand(time(NULL)) ;
-    Manager manager ;
-
+    //Manager manager ;
+    Player player1 ;
+    player1.doexercise() ;
+    clock_t t = clock() ;
+    int a ;
+    cin >> a ;
+    cout << (clock() - t)/CLOCKS_PER_SEC << endl ;
     /*
     Sudoku sudoku(9) ;
     sudoku.print_sudoku() ;
@@ -93,6 +98,6 @@ int main( int argc, char** argv ) {
     //sudoku.print_copy() ;
     */
 
-    start( manager ) ;
+    //start( manager ) ;
     return 0 ;
 } // main
