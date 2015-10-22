@@ -1,10 +1,11 @@
 #ifndef MANAGER_HPP_INCLUDED
 #define MANAGER_HPP_INCLUDED
 
+#include <sys/stat.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <sys/stat.h>
+#include <set>
 #include <vector>
 #include <algorithm>
 #include "Sudoku.hpp"
@@ -16,7 +17,8 @@ class Manager {
         Sudoku* s ;                                                              // current sudoku
         vector<Sudoku*> sudoku_pointer_list ;
         vector<string> file_list ;
-        string list_file_name ;
+        set<pair<int, string>> rank_list ;
+        string list_file_name, rank_file_name ;
 
         /* * * * * * * * * *sudoku_creater* * * * * * * * * * */
 
@@ -78,6 +80,25 @@ class Manager {
             }
         }
 
+        void load_rank_file(void) {
+            ifstream file( rank_file_name ) ;
+            if ( !file.is_open() ) return ;
+            int score ;
+            string player_name ;
+            while( file >> score >> player_name ) {
+                rank_list.insert( make_pair( score, player_name ) ) ;
+            }
+        }
+
+        void save_rank_file(void) {
+            ofstream file( rank_file_name ) ;
+            auto ite = rank_list.rbegin() ;
+            auto end = rank_list.rend() ;
+            int count = 0 ;
+            for ( ; ite != end && count < 10 ; ++ite, ++count )
+                file << (*ite).first << " " << (*ite).second << endl ;
+        }
+
         /* * * * * * * * * * sudoku_list * * * * * * * * * * */
 
         void print_line() {
@@ -93,10 +114,6 @@ class Manager {
         }
 
         void destructor() {
-            if ( s != nullptr ) {
-                delete s ;
-                s = nullptr ;
-            }
             for_each( sudoku_pointer_list.begin(), sudoku_pointer_list.end(), [](Sudoku* p){
                 if ( p != nullptr ) {
                     delete p ;
@@ -111,9 +128,11 @@ class Manager {
         	manager_size = size == 9 ? 9 : 4 ;
             s = nullptr ;
             list_file_name = "sudoku\\sudokus.list" ;
+            rank_file_name = "sudoku\\rank.rank" ;
             ifstream file( list_file_name ) ;
             if ( file.is_open() ) load_sudoku_list() ;
             else create_sudoku_list() ;
+            load_rank_file() ;
         } // initializer()
 
 
@@ -215,10 +234,22 @@ class Manager {
             new_sudoku.print_sudoku() ;
         } // set_hardness to current sudoku object
 
-        void clear_screen() {
+        void clear_screen(void) {
             system( "cls" ) ;
         }
 
+        void add_to_rank( int score = 0, string name = "unnamed" ) {
+            rank_list.insert( make_pair( score, name ) ) ;
+            save_rank_file() ;
+        }
+
+        void print_rank(void) {
+            auto ite = rank_list.rbegin() ;
+            auto end = rank_list.rend() ;
+            int count = 0 ;
+            for ( ; ite != end && count < 10 ; ++ite, ++count )
+                cout << (*ite).first << " : " << (*ite).second << endl ;
+        }
         /* * * * * * * * * * * methods * * * * * * * * * * * */
     // end public
 }; // class Manger

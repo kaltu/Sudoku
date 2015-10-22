@@ -77,6 +77,7 @@ void start( Manager &manager ) {
 int main( int argc, char** argv ) {
     srand(time(NULL)) ;
     Manager manager ;
-    start( manager ) ;
+    manager.print_rank() ;
+    //start( manager ) ;
     return 0 ;
 } // main
