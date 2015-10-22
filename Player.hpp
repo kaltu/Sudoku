@@ -25,14 +25,16 @@ class Player{
 
     void stage(){
       exercise() ;
+      cout << "Stage 1 clear!! do next!" << endl ;
       exercise(2) ;
+      cout << "Stage 2 clear!! do next!" << endl ;
       exercise(3) ;
+      cout << "All stage clear!!" << endl ;
     } // stage()
 
     void exercise( int int_hardness = 1 ) {
       int x, y, num ;
-      cout << "select sudoku size\n" ;
-      cin >> size ;
+      size = now_sudoku->size() ;
       if ( int_hardness == 1 ) hardness = simple ;
       else if ( int_hardness == 2 ) hardness = medium ;
       else if ( int_hardness == 3 ) hardness = hard ;
@@ -44,6 +46,7 @@ class Player{
         enter_sudoku( x, y, num ) ;
       s_end = clock() ;
       s_score = score( ( double( s_end - s_star ) / CLOCKS_PER_SEC ) / 60.0 ) ;
+      system( "cls" ) ;
       cout << "You passed it, Exercise end! You get " << s_score << " score!\n";
     } // exercise()
 
@@ -90,6 +93,10 @@ class Player{
       now_sudoku = new Sudoku(9) ;
     } // Player()
 
+    Player( Sudoku *readlist ) {
+      now_sudoku = readlist ;
+    } // Player()
+
     void SetColor( int ForeColor = 7, int BackGroundColor = 0 ){
         HANDLE hCon = GetStdHandle( STD_OUTPUT_HANDLE );
         SetConsoleTextAttribute( hCon,ForeColor|BackGroundColor );
@@ -100,11 +107,12 @@ class Player{
     } // doexercise()
 
     void printNow( int num ) {
+        system( "cls" ) ;
         for ( int x = 0 ; x < size ; cout << endl, ++x )
             for ( int y = 0 ; y < size ; ++y )
                 if ( !uncorrect[x][y] ) {
                     SetColor( 7, 70 ) ;
-                    cout << num ;
+                    cout << " " ;
                     SetColor() ;
                     cout << " " ;
                 } // if()
