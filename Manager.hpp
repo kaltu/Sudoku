@@ -213,13 +213,10 @@ class Manager {
                 } ) ;
         } // print_sudokus()
 
-        void set_hardness( ) {
-            Sudoku new_sudoku( manager_size ) ;
+        void set_hardness( int int_hardness, Sudoku & new_sudoku ) {
             new_sudoku = *s ;
             Hardness hardness ;
             cout << "Input hardness:" << endl << ">>> " ;
-            int int_hardness ;
-            cin >> int_hardness ;
             if ( int_hardness == 1 )
                 hardness = simple ;
             else if ( int_hardness == 2 )
@@ -229,19 +226,23 @@ class Manager {
             else {
             	cout << "error: " << int_hardness << endl ;
             	return ;
-			}
+            }
             new_sudoku.set_hardness( hardness ) ;
             new_sudoku.print_sudoku() ;
         } // set_hardness to current sudoku object
 
         void clear_screen(void) {
             system( "cls" ) ;
-        }
+        } // clear_screen()
+
+        Sudoku* request_quesion(void) {
+          return sudoku_pointer_list.at( rand() % sudoku_pointer_list.size() ) ;
+        } // request_quesion()
 
         void add_to_rank( int score = 0, string name = "unnamed" ) {
             rank_list.insert( make_pair( score, name ) ) ;
             save_rank_file() ;
-        }
+        } // add_to_rank()
 
         void print_rank(void) {
             auto ite = rank_list.rbegin() ;
@@ -249,7 +250,7 @@ class Manager {
             int count = 0 ;
             for ( ; ite != end && count < 10 ; ++ite, ++count )
                 cout << (*ite).first << " : " << (*ite).second << endl ;
-        }
+        } // print_rank()
         /* * * * * * * * * * * methods * * * * * * * * * * * */
     // end public
 }; // class Manger

@@ -198,7 +198,11 @@ class Sudoku {
             stringstream ss ;
             ss << "sudoku\\" << sudoku_hash_str << ".sudoku" ;
             sudoku_name = ss.str() ;
-        }
+        } // set_name()
+
+        void set_num( int x, int y, int num ) {
+          sudoku[x][y] = num ;
+        } // set_num()
 
         /* * * * * * * * * * * commands * * * * * * * * * * * */
 
@@ -379,6 +383,14 @@ class Sudoku {
             check_cross( x, y, used ) ;
             return used[number] ;
         } // correct()
+
+        void set_array( int x, int y, int num ) {
+          set_num( x, y, num ) ;
+        } // set_array()
+
+        int rtn_sudoku( int x, int y ) {
+          return sudoku[x][y] ;
+        } // rtn_sudoku()
     // end public
 }; // class Sudoku
 
