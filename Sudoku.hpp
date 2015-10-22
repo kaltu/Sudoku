@@ -367,6 +367,13 @@ class Sudoku {
 
         /* * * * * * * * * * * getters * * * * * * * * * * * */
 
+        bool correct( int x, int y, int number ) {
+            bool *used = new bool[ sudoku_size+1 ] ;
+            for ( int i = 0 ; i < sudoku_size+1 ; i++ ) used[i] = false ;
+            check_cell( x, y, used ) ;
+            check_cross( x, y, used ) ;
+            return used[number] ;
+        } // correct()
     // end public
 }; // class Sudoku
 
