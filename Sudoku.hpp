@@ -8,10 +8,10 @@
 #include <sys/stat.h>
 using namespace std ;
 
-enum Hardness { simple = 2, medium = 4, hard = 10 };
+enum Hardness { simple = 2, medium = 6, hard = 10 };
 class Sudoku {
     protected:
-    	  Hardness sudoku_hardness ;
+    	Hardness sudoku_hardness ;
         int build_times, sudoku_size, cell_size ;
         int** sudoku ;
         string sudoku_str, sudoku_hash_str, sudoku_name ;
@@ -194,6 +194,12 @@ class Sudoku {
             sudoku_str = str ;
         } // set_str()
 
+        void set_name(void) {
+            stringstream ss ;
+            ss << "sudoku\\" << sudoku_hash_str << ".sudoku" ;
+            sudoku_name = ss.str() ;
+        }
+
         /* * * * * * * * * * * commands * * * * * * * * * * * */
 
     // end protected
@@ -217,6 +223,10 @@ class Sudoku {
             build_times = times ;
             set_str() ;
             set_hash() ;
+<<<<<<< HEAD
+=======
+            set_name() ;
+>>>>>>> refs/remotes/origin/master
             sudoku_hardness = simple ;
         } // constructor by specified size
 
@@ -237,12 +247,23 @@ class Sudoku {
                 }
             set_str() ;
             set_hash() ;
+<<<<<<< HEAD
             ///hardness = simple ;
+=======
+            set_name() ;
+            sudoku_hardness = simple ;
+>>>>>>> refs/remotes/origin/master
         } // constructor by string representation of other Sudoku object
 
         Sudoku( const Sudoku& other ) {
             *this = other ;
         } // constuctor by other Sudoku object
+
+        ~Sudoku() {
+            for ( int i = 0 ; i < sudoku_size ; ++i )
+                delete sudoku[i] ;
+            delete sudoku ;
+        } // destructor of Sudoku class
 
         /* * * * * * * * * * constructors * * * * * * * * * * */
         /* * * * * * * * * * * operators * * * * * * * * * * * */
@@ -266,7 +287,7 @@ class Sudoku {
         } // operator overloading =
 
         /* * * * * * * * * * * operators * * * * * * * * * * * */
-        /* * * * * * * * * * * commands * * * * * * * * * * * */
+        /* * * * * * * * * * * methods * * * * * * * * * * * */
 
         bool self_check(void) {
             for ( int x = 0 ; x < sudoku_size ; ++x )
@@ -303,9 +324,6 @@ class Sudoku {
             if ( ! ( stat( dirname.c_str(), &sb ) == 0 && S_ISDIR( sb.st_mode ) ))
                 system( "md sudoku" ) ;
             // ************************ // may be buggy
-            stringstream ss ;
-            ss << dirname << filename << ".sudoku" ;
-            sudoku_name = ss.str() ;
             try {
                 ofstream file( sudoku_name ) ;
                 if ( !file ) {
@@ -320,7 +338,17 @@ class Sudoku {
             } // catch()
         } // save sodoku
 
-        /* * * * * * * * * * * commands * * * * * * * * * * * */
+        void delete_sudoku( string dirname = "sudoku\\" ) {
+            string filename = dirname + hash_str() + ".sudoku" ;
+            std::remove( filename.c_str() ) ;
+        } // delete_sudoku()
+
+        void set_hardness( Hardness hardness ) {
+        	  this->sudoku_hardness = hardness ;
+              dig() ;
+        } // set_hardness()
+
+        /* * * * * * * * * * * methods * * * * * * * * * * * */
         /* * * * * * * * * * * getters * * * * * * * * * * * */
 
         size_t hash(void) {
@@ -350,10 +378,6 @@ class Sudoku {
         }
 
         /* * * * * * * * * * * getters * * * * * * * * * * * */
-        void set_hardness( Hardness hardness ) {
-        	  this->sudoku_hardness = hardness ;
-              dig() ;
-        } // set_hardness()
 
         bool correct( int x, int y, int number ) {
             bool *used = new bool[ sudoku_size+1 ] ;

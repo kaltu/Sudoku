@@ -9,42 +9,77 @@ using namespace std ;
 #include "Manager.hpp"
 #include "Player.hpp"
 
-void play() ;
-void manage() ;
-void start() ;
+void play( Manager &manager ) ;
+void manage( Manager &manager ) ;
+void start( Manager &manager ) ;
 
-void play(void) {
-
+void play( Manager &manager ) {
+    manager.clear_screen() ;
+    cout << "0.exit player mode" << endl
+         << ">>> " ;
+    string opt ;
+    cin >> opt ;
+    if ( opt == "0" )
+        return start( manager ) ;
+    else return play( manager ) ;
+    system( "pause" ) ;
+    return play( manager ) ;
 } // player interface
 
-void manage(void) {
-    cout << "�Ѧa������" << endl << ">>> \n" ;
-    string answer ;
-    cin >> answer ;
-    if ( answer != "���M���y��" ) return start() ;
-
+void manage( Manager &manager ) {
+    manager.clear_screen() ;
+    cout << "1.show all sudokus" << endl
+         << "2.show current sudoku" << endl
+         << "3.change sudoku" << endl
+         << "4.add a new sudoku" << endl
+         << "5.delete current sudoku" << endl
+         << "0.exit managing mode" << endl
+         << ">>> " ;
+    string opt ;
+    cin >> opt ;
+    if ( opt == "1" )
+        manager.print_sudokus() ;
+    else if ( opt == "2" )
+        manager.print_sudoku() ;
+    else if ( opt == "3" ) {
+        manager.print_sudokus() ;
+        int index ;
+        cout << "Whitch one do you wnat to switch to?" << endl << ">>> " ;
+        cin >> index ;
+        manager.switch_sudoku( index ) ;
+    }
+    else if ( opt == "4" )
+        manager.create_sudoku() ;
+    else if ( opt == "5" )
+        manager.delete_sudoku() ;
+    else if ( opt == "0" )
+        return start( manager ) ;
+    else return manage( manager ) ;
+    system( "pause" ) ;
+    return manage( manager ) ;
 } // manager interface
 
-void start(void) {
-    cout << "�Ӫ̦��H�I" << endl << ">>> \n" ;
-    short opt ;
+void start( Manager &manager ) {
+    manager.clear_screen() ;
+    cout << "1.play" << endl
+         << "2.manage" << endl
+         << "0.exit" << endl
+         << ">>> " ;
+    string opt ;
+
     cin >> opt ;
-    if ( opt == 1 )
-        return play() ;
-    else if ( opt == 2 )
-        return manage() ;
-    else
-        return start() ;
+    if ( opt == "1" )
+        return play( manager ) ;
+    else if ( opt == "2" )
+        return manage( manager ) ;
+    else if ( opt != "0" )
+        return start(manager) ;
 } // starter
 
 int main( int argc, char** argv ) {
     srand(time(NULL)) ;
     Manager manager ;
-    manager.print_sudokus() ;
-    Sudoku a( 9 ) ;
-    manager.set_hardness( 1, a );
-    //Player play ;
-    //play.doexercise( a ) ;
+
     /*
     Sudoku sudoku(9) ;
     sudoku.print_sudoku() ;
@@ -57,6 +92,7 @@ int main( int argc, char** argv ) {
     //sudoku.copy2() ;
     //sudoku.print_copy() ;
     */
-    start() ;
+
+    start( manager ) ;
     return 0 ;
 } // main
