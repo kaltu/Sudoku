@@ -331,6 +331,11 @@ class Sudoku {
             } // catch()
         } // save sodoku
 
+        void delete_sudoku( string dirname = "sudoku\\" ) {
+            string filename = dirname + hash_str() + ".sudoku" ;
+            std::remove( filename.c_str() ) ;
+        } // delete_sudoku()
+
         void set_hardness( Hardness hardness ) {
         	  this->sudoku_hardness = hardness ;
               dig() ;

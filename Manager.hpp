@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <sys/stat.h>
-#include <list>
+#include <vector>
 #include <algorithm>
 #include "Sudoku.hpp"
 using namespace std ;
@@ -14,8 +14,8 @@ class Manager {
     protected:
     	int manager_size, sudoku_index ;
         Sudoku* s ;                                                              // current sudoku
-        list<Sudoku*> sudoku_pointer_list ;
-        list<string> file_list ;
+        vector<Sudoku*> sudoku_pointer_list ;
+        vector<string> file_list ;
         string list_file_name ;
 
         /* * * * * * * * * *sudoku_creater* * * * * * * * * * */
@@ -23,13 +23,21 @@ class Manager {
         void new_sudoku( void ) {
             Sudoku* temp = new Sudoku( manager_size ) ;
             temp->save() ;
-            write_to_file( temp ) ;
             add_to_list( temp ) ;
+            write_to_file( temp ) ;
         } // create a new sudoku
 
         void write_to_file( Sudoku* sptr ) {
-            ofstream file( list_file_name ) ;
+            ofstream file( list_file_name, std::ios_base::app ) ;
             if ( file.is_open() ) file << sptr->file_name() << endl ;
+        }
+
+        void rebuild_file_system(void) {
+            ofstream file( list_file_name ) ;
+            file << "" ;
+            file.close() ;
+            for ( int i = 0 ; i < sudoku_pointer_list.size() ; ++i )
+                write_to_file( sudoku_pointer_list.at( i ) ) ;
         }
 
         void add_to_list( Sudoku* sptr ) {
@@ -72,6 +80,12 @@ class Manager {
 
         /* * * * * * * * * * sudoku_list * * * * * * * * * * */
 
+        void print_line() {
+            for ( int i = 1 ; i < 2 * manager_size ; ++i )
+                cout << '=' ;
+            cout << endl ;
+        }
+
         void init() {
             int size = manager_size ;
             destructor() ;
@@ -110,11 +124,7 @@ class Manager {
 
         /*  the constructor of Sudoku class
          */
-        Manager() {
-            constructor() ;
-        } // constructor of Manager class
-
-        Manager( int size ) {
+        Manager( int size = 9 ) {
             constructor( size ) ;
         } // constructor of Manager class
 
@@ -126,17 +136,53 @@ class Manager {
         /* * * * * * * * * * * methods * * * * * * * * * * * */
 
         void delete_sudoku( void ) {
-
+             if ( sudoku_pointer_list.size() <= 1 ) {
+                cout << "Error! You can not delete the only one sudoku." << endl ;
+                return ;
+            }
+            print_sudoku() ;
+            cout << "Do you want to delete this(as above) sudoku? (y/n)" << endl << ">>> " ;
+            string ans ;
+            cin >> ans ;
+            if ( !( ans == "Y" || ans == "y" ) ) return ;
+            s->delete_sudoku() ;
+            delete s ;
+            s = nullptr ;
+            sudoku_pointer_list.erase( sudoku_pointer_list.begin() + sudoku_index ) ;
+            if ( sudoku_pointer_list.size() ) {
+                sudoku_index = sudoku_pointer_list.size() - 1 ;
+                s = sudoku_pointer_list.at( sudoku_index ) ;
+            }
+            rebuild_file_system() ;
+            print_sudoku() ;
         } // delete_sudoku()
 
         void create_sudoku( void ) {
-
+            new_sudoku() ;
+            print_sudoku() ;
         } // new_sudoku()
+
+        void print_sudoku(void) {
+            clear_screen() ;
+            cout << sudoku_index << endl ;
+            print_line() ;
+            sudoku_pointer_list.at( sudoku_index )->print_sudoku() ;
+        }
+
+        void switch_sudoku( int index ) {
+            if ( index >= sudoku_pointer_list.size() ) {
+                cout << "Error! change to " << index << " while there is only "
+                     << sudoku_pointer_list.size() << " sudokus." << endl ;
+                return ;
+            }
+            sudoku_index = index ;
+            s = sudoku_pointer_list.at(index) ;
+        }
 
         void print_sudokus( void ) {
             int index = 0, size = 2 * manager_size ;
             for_each( sudoku_pointer_list.begin(), sudoku_pointer_list.end(),
-                [&index, size](Sudoku* p){
+                [&index, &size](Sudoku* p){
                     cout << index++ << endl ;
                     for ( int i = 1 ; i < size ; ++i )
                         cout << '=' ;
@@ -168,6 +214,10 @@ class Manager {
             new_sudoku.set_hardness( hardness ) ;
             new_sudoku.print_sudoku() ;
         } // set_hardness to current sudoku object
+
+        void clear_screen() {
+            system( "cls" ) ;
+        }
 
         /* * * * * * * * * * * methods * * * * * * * * * * * */
     // end public
