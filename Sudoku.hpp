@@ -14,7 +14,7 @@ class Sudoku {
     	Hardness sudoku_hardness ;
         int build_times, sudoku_size, cell_size ;
         int** sudoku ;
-        string sudoku_str, sudoku_hash_str, sudoku_name ;
+        string dirname, sudoku_str, sudoku_hash_str, sudoku_name ;
         size_t sudoku_hash ;                                                     // (size_t) means (unsigned long long int)
 
         /* * * * * * * * * * builders * * * * * * * * * * */
@@ -196,7 +196,7 @@ class Sudoku {
 
         void set_name(void) {
             stringstream ss ;
-            ss << "sudoku\\" << sudoku_hash_str << ".sudoku" ;
+            ss << "sudoku" << sudoku_size << "\\" << sudoku_hash_str << ".sudoku" ;
             sudoku_name = ss.str() ;
         } // set_name()
 
@@ -229,6 +229,9 @@ class Sudoku {
             set_hash() ;
             set_name() ;
             sudoku_hardness = simple ;
+            stringstream ss ;
+            ss << "sudoku" << sudoku_size << "\\" ;
+            dirname = ss.str() ;
         } // constructor by specified size
 
         Sudoku( string str ) {
@@ -250,6 +253,9 @@ class Sudoku {
             set_hash() ;
             set_name() ;
             sudoku_hardness = simple ;
+            ss.clear() ;
+            ss << "sudoku" << sudoku_size << "\\" ;
+            dirname = ss.str() ;
         } // constructor by string representation of other Sudoku object
 
         Sudoku( const Sudoku& other ) {
@@ -274,6 +280,7 @@ class Sudoku {
                 for ( int y = 0 ; y < sudoku_size ; ++ y )
                     sudoku[x][y] = Other.sudoku[x][y] ;
 
+            dirname = Other.dirname ;
             sudoku_str = Other.sudoku_str ;
             sudoku_hash_str = Other.sudoku_hash_str ;
             sudoku_name = Other.sudoku_name ;
@@ -314,12 +321,15 @@ class Sudoku {
             } // for()
         } // print_cell()
 
-        void save( string filename = "", string dirname = "sudoku\\" ) {
+        void save( string filename = "" ) {
             if ( filename == "" ) filename = hash_str() ;
             // ************************ // may be buggy
             struct stat sb ;
-            if ( ! ( stat( dirname.c_str(), &sb ) == 0 && S_ISDIR( sb.st_mode ) ))
-                system( "md sudoku" ) ;
+            if ( ! ( stat( dirname.c_str(), &sb ) == 0 && S_ISDIR( sb.st_mode ) )) {
+                stringstream ss ;
+                ss << "md sudoku" << sudoku_size ;
+                system( ss.str().c_str() ) ;
+            }
             // ************************ // may be buggy
             try {
                 ofstream file( sudoku_name ) ;
@@ -335,7 +345,7 @@ class Sudoku {
             } // catch()
         } // save sodoku
 
-        void delete_sudoku( string dirname = "sudoku\\" ) {
+        void delete_sudoku(void) {
             string filename = dirname + hash_str() + ".sudoku" ;
             std::remove( filename.c_str() ) ;
         } // delete_sudoku()
