@@ -83,7 +83,7 @@ void init(void) {
     system( "cls" ) ;
     cout << "4. mini-sudoku" << endl
          << "9. standard-sudoku" << endl
-         << "0. exit"
+         << "0. exit" << endl
          << ">>> " ;
     string i ;
     cin >> i ;
