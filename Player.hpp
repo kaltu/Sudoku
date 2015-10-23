@@ -9,6 +9,7 @@ class Player{
   protected:
     string name ;
     int spendtime, size, s_score ;
+    int cell_size ;
     Hardness hardness ;
     Sudoku *now_sudoku;
     bool **uncorrect ;
@@ -20,21 +21,13 @@ class Player{
       for ( int x = 0 ; x < size ; x++ )
         for ( int y = 0 ; y < size ; y++ )
           uncorrect[x][y] = true ;
-      cout << "bool table finished" << endl ;
     } // build_bool()
-
-    void stage(){
-      exercise() ;
-      cout << "Stage 1 clear!! do next!" << endl ;
-      exercise(2) ;
-      cout << "Stage 2 clear!! do next!" << endl ;
-      exercise(3) ;
-      cout << "All stage clear!!" << endl ;
-    } // stage()
 
     void exercise( int int_hardness = 1 ) {
       int x, y, num ;
       size = now_sudoku->size() ;
+      if ( size == 9 ) cell_size = 3 ;
+      else cell_size = 2 ;
       if ( int_hardness == 1 ) hardness = simple ;
       else if ( int_hardness == 2 ) hardness = medium ;
       else if ( int_hardness == 3 ) hardness = hard ;
@@ -42,7 +35,7 @@ class Player{
       now_sudoku->set_hardness( hardness ) ;
       clock_t s_star, s_end ;
       s_star = clock() ;
-      for ( now_sudoku->print_sudoku() ; ! clearstage() ; printNow( num ) )
+      for ( init_sudoku() ; ! clearstage() ; printNow( num ) )
         enter_sudoku( x, y, num ) ;
       s_end = clock() ;
       s_score = score( ( double( s_end - s_star ) / CLOCKS_PER_SEC ) / 60.0 ) ;
@@ -67,7 +60,7 @@ class Player{
     void enter_coordinate( int & x, int & y ) {
       cout << "Enter coordinate to fill sudoku EX : 1 1\n3\nor 2 2 3\n" ;
       cin >> x >> y ;
-      if ( ! ( ( 0 <= x && x < 9 ) && ( 0 <= y && y < 9 ) ) ) {
+      if ( ! ( ( 0 <= x && x < size ) && ( 0 <= y && y < size ) ) ) {
         cout << "Error coordinate Please try again!\n" ;
         return enter_coordinate( x, y ) ;
       } // if()
@@ -79,7 +72,7 @@ class Player{
       build_bool() ;
       enter_coordinate( x, y ) ;
       cin >> num ;
-      if ( ! ( 0 < num && num < 10 ) ) return enter_sudoku( x, y, num ) ;
+      if ( ! ( 0 < num && num < size + 1 ) ) return enter_sudoku( x, y, num ) ;
       cout << "not num problemQQ!\n" ;
       if ( ! now_sudoku->rtn_sudoku( x, y ) )
         if ( ! now_sudoku->correct( x, y, num ) ) now_sudoku->set_array( x, y, num ) ;
@@ -99,6 +92,8 @@ class Player{
 
     Player( Sudoku *readlist ) {
       now_sudoku = readlist ;
+      cout << "Enter your name..." << endl ;
+      cin >> name ;
     } // Player()
 
     void SetColor( int ForeColor = 7, int BackGroundColor = 0 ){
@@ -106,13 +101,26 @@ class Player{
         SetConsoleTextAttribute( hCon,ForeColor|BackGroundColor );
     } // SetColor()
 
-    void doexercise() {
-      stage() ;
-    } // doexercise()
+    void exerciseMode() {
+      exercise() ;
+    } // exerciseMode()
+
+    void stageMode( Manager & manager ) {
+      exercise() ;
+      cout << "Stage 1 clear!! do next!" << endl ;
+      update_sudoku( manager.request_quesion() ) ;
+      exercise(2) ;
+      cout << "Stage 2 clear!! do next!" << endl ;
+      update_sudoku( manager.request_quesion() ) ;
+      exercise(3) ;
+      cout << "All stage clear!!" << endl ;
+    } // stageMode()
 
     void printNow( int num ) {
         system( "cls" ) ;
-        for ( int x = 0 ; x < size ; cout << endl, ++x )
+        Print_xcoordinate() ;
+        Print_ycoordinate(0) ;
+        for ( int x = 0 ; x < size ; cout << endl, ++x, Print_ycoordinate(x) ) {
             for ( int y = 0 ; y < size ; ++y )
                 if ( !uncorrect[x][y] ) {
                     SetColor( 7, 70 ) ;
@@ -120,13 +128,58 @@ class Player{
                     SetColor() ;
                     cout << " " ;
                 } // if()
-                else if ( now_sudoku->rtn_sudoku( x, y ) ) cout << now_sudoku->rtn_sudoku( x, y ) << " " ;
+                else if ( now_sudoku->rtn_sudoku( x, y ) )
+                  cout << now_sudoku->rtn_sudoku( x, y ) << " " ;
                 else cout << "  " ;
+            Print_ycoordinate(x) ;
+        } // for
+        Print_xcoordinate() ;
     } // printNow()
 
-    void new_question( Sudoku *sudoku ) {
-      update_sudoku( sudoku ) ;
-    } // update_sudoku()
+    void init_sudoku(void) {
+      Print_xcoordinate() ;
+      Print_ycoordinate(0) ;
+      for ( int x = 0 ; x < size ; cout << endl, ++x, Print_ycoordinate(x) ) {
+        for ( int y = 0 ; y < size ; ++y ) {
+          int c_x = ( x / cell_size ) * cell_size ;
+          int c_y = ( y / cell_size ) * cell_size ;
+          if ( now_sudoku->rtn_sudoku( x, y ) ) {
+            set_color( c_x, c_y, now_sudoku->rtn_sudoku( x, y ) ) ;
+            //cout << now_sudoku->rtn_sudoku( x, y ) << " " ;
+          } // if
+          else cout << "  " ;
+        } // for
+        Print_ycoordinate(x) ;
+      } // for
+      Print_xcoordinate() ;
+    } // print_sudoku()
+
+    void set_color( int x, int y, int sudoku ) {
+      if ( ( x % 2 == 0 && y % 2 != 0 ) || ( x % 2 != 0 && y % 2 == 0 ) ) {
+        SetColor( 7, 90 ) ;
+        cout << sudoku << " " ;
+        SetColor() ;
+      }
+      else
+        cout << sudoku << " " ;
+    } // set_color()
+
+    void Print_xcoordinate() {
+      SetColor( 7, 50 ) ;
+      cout << "  " ;
+      for ( int i = 0 ; i < size ; cout << i << " ", i++ ) ;
+      cout << " " << endl ;
+      SetColor() ;
+    } // Print_xcoordinate()
+
+    void Print_ycoordinate( int i ) {
+      if( i < size ) {
+        SetColor( 7, 50 ) ;
+        cout << i ;
+        SetColor() ;
+        cout << " " ;
+      } // if
+    } // Print_ycoordinate()
 
   // end public
 }; // Player
