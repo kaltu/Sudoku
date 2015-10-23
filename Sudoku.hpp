@@ -140,8 +140,10 @@ class Sudoku {
         } // clear()
 
         /*
-        dig dig dig
-        range hardness * (1~3)
+        隨機產生座標後
+        判斷若可以挖洞
+        就挖掉填成0
+        若不行就重來
         */
         void dig(void) {
           int hole = sudoku_size > 4 ? (2+sudoku_hardness) * sudoku_size : sudoku_hardness * cell_size ;
@@ -157,8 +159,9 @@ class Sudoku {
           } // for()
         } // dig()
         /*
-        if solution == 1 return true
-        not 1 return false
+        判斷此座標是否可以挖洞
+        如果挖洞的座標有小於難度的解挖
+        不行就不給挖
         */
         bool diggable( int x, int y ) {
             for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ;
