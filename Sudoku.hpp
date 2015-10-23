@@ -14,6 +14,7 @@ class Sudoku {
     	Hardness sudoku_hardness ;
         int build_times, sudoku_size, cell_size ;
         int** sudoku ;
+        bool* used ;
         string dirname, sudoku_str, sudoku_hash_str, sudoku_name ;
         size_t sudoku_hash ;                                                     // (size_t) means (unsigned long long int)
 
@@ -21,7 +22,7 @@ class Sudoku {
 
         /*   check if numbers were used in same cell
          */
-        void check_cell( int x, int y, bool* used ) {
+        void check_cell( int x, int y ) {
             int x_start = ( x / cell_size ) * cell_size ;                        // perform floor division then production.
             int y_start = ( y / cell_size ) * cell_size ;
             for ( int i = x_start ; i < x_start + cell_size ; ++i )
@@ -31,7 +32,7 @@ class Sudoku {
 
         /*   check if numbers were used in same column and same row
          */
-        void check_cross( int x, int y, bool* used ) {
+        void check_cross( int x, int y ) {
             for ( int i = 1 ; i < sudoku_size+1 ; ++i ) {
                 if ( sudoku[x][i-1] )
                     used[ sudoku[x][i-1] ] = true ;
@@ -42,30 +43,26 @@ class Sudoku {
 
         /*    generate and retrun an array of useage data
          */
-        bool* check_useage( int x, int y ) {
-            bool* used = new bool[ sudoku_size+1 ] ;
+        void check_useage( int x, int y ) {
             for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ;        // initialize used[]
-            check_cross( x, y, used ) ;
-            check_cell( x, y, used ) ;
-            return used ;
+            check_cross( x, y ) ;
+            check_cell( x, y ) ;
         } // check_useage()
 
         /*    generate and retrun an array of useage data
          */
-        bool* check_column( int x, int y ) {
-            bool* used = new bool[ sudoku_size+1 ] ;
+        void check_column( int x, int y ) {
             for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ;        // initialize used[]
             for ( int i = 1 ; i < sudoku_size+1 ; ++i )
                 if ( sudoku[i-1][y] )
                     used[ sudoku[i-1][y] ] = true ;
-            check_cell( x, y, used ) ;
-            return used ;
+            check_cell( x, y ) ;
         } // check_useage()
 
         /*  generate and return a random number witch must be valid
          */
         int random_valid( int x, int y ) {
-            bool* used = check_useage( x, y ) ;
+            check_useage( x, y ) ;
             vector<int> v ;
             for ( int i = 1 ; i < sudoku_size+1 ; ++i )
                 if ( !used[i] ) v.push_back( i ) ;
@@ -95,7 +92,7 @@ class Sudoku {
          *   so that (x, y) can insert new number
          */
         bool replace( int x, int y ) {
-            bool *used = check_column( x, y ) ;                                  // check useage data at ( x, y )
+            check_column( x, y ) ;                                  // check useage data at ( x, y )
             for ( int i = 0 ; i < y ; i++ )                                      // for numbers in range ( x, 0 ) ~ ( x, y-1 )
                 if ( ! used[ sudoku[x][i] ] && changeable( x, i ) ) {            // if number at ( x, i ) is available at ( x, y ) and is changeable
 //                    cout << "swap ( " << x << ", " << i << " ) with ( "
@@ -165,10 +162,9 @@ class Sudoku {
         not 1 return false
         */
         bool diggable( int x, int y ) {
-            bool* used = new bool[ sudoku_size+1 ] ;
             for ( int i = 0 ; i < sudoku_size+1 ; ++i ) used[i] = false ;
-            check_cell( x, y, used ) ;
-            check_cross( x, y, used ) ;
+            check_cell( x, y ) ;
+            check_cross( x, y ) ;
             int solution = 0 ;
             for ( int i = 1 ; i < sudoku_size+1 ; i++ )
                 if ( ! used[i] ) solution++ ;
@@ -216,6 +212,7 @@ class Sudoku {
             if ( size != 9 ) size = 4 ;                                          // only 4*4 or 9*9 sudoku is allowed
             sudoku_size = size ;
             cell_size = size % 3 ? 2 : 3 ;
+            used = new bool[ size ] ;
             sudoku = new int*[ size ] ;                                          // sudoku is a pointer of integer pointer (int**)
             for ( int i = 0 ; i < size ; ++i )
                 sudoku[i] = new int[ size ] ;
@@ -238,6 +235,7 @@ class Sudoku {
             if ( str.size() == 16 ) sudoku_size = 4 ;
             else sudoku_size = 9 ;
             cell_size = sudoku_size % 3 ? 2 : 3 ;
+            used = new bool[ sudoku_size ] ;
             sudoku = new int*[ sudoku_size ] ;                                          // sudoku is a pointer of integer pointer (int**)
             for ( int i = 0 ; i < sudoku_size ; ++i )
                 sudoku[i] = new int[ sudoku_size ] ;
@@ -266,6 +264,7 @@ class Sudoku {
             for ( int i = 0 ; i < sudoku_size ; ++i )
                 delete sudoku[i] ;
             delete sudoku ;
+            delete used ;
         } // destructor of Sudoku class
 
         /* * * * * * * * * * constructors * * * * * * * * * * */
@@ -387,10 +386,9 @@ class Sudoku {
         /* * * * * * * * * * * getters * * * * * * * * * * * */
 
         bool correct( int x, int y, int number ) {
-            bool *used = new bool[ sudoku_size+1 ] ;
             for ( int i = 0 ; i < sudoku_size+1 ; i++ ) used[i] = false ;
-            check_cell( x, y, used ) ;
-            check_cross( x, y, used ) ;
+            check_cell( x, y ) ;
+            check_cross( x, y ) ;
             return used[number] ;
         } // correct()
 
