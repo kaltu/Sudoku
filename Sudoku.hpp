@@ -92,7 +92,7 @@ class Sudoku {
          *   so that (x, y) can insert new number
          */
         bool replace( int x, int y ) {
-            check_column( x, y ) ;                                  // check useage data at ( x, y )
+            check_column( x, y ) ;                                               // check useage data at ( x, y )
             for ( int i = 0 ; i < y ; i++ )                                      // for numbers in range ( x, 0 ) ~ ( x, y-1 )
                 if ( ! used[ sudoku[x][i] ] && changeable( x, i ) ) {            // if number at ( x, i ) is available at ( x, y ) and is changeable
 //                    cout << "swap ( " << x << ", " << i << " ) with ( "
@@ -121,15 +121,15 @@ class Sudoku {
             int retry_count = 0 ;
             for ( int x = 0 ; x < sudoku_size ; ++x )
                 for ( int y = 0, retry_count = 0 ; y < sudoku_size ; ++y )
-                    if ( !insert_number( x, y ) )
-                        if ( !replace( x, y ) )
-                            if ( !re_build( x, y, retry_count) )
-                                return false ;
-            return true ;
+                    if ( !insert_number( x, y ) )                                // if insert failed
+                        if ( !replace( x, y ) )                                  // try replace previous number with current location
+                            if ( !re_build( x, y, retry_count) )                 // replace failed, abort current line and retry
+                                return false ;                                   // even rebuild also failed, return false, we did our best
+            return true ; // build success
         } // build_sudoku()
 
-        /* * * * * * * * * * builders * * * * * * * * * * */
-        /* * * * * * * * * * * commands * * * * * * * * * * * */
+        /* * * * * * * * * * * builders * * * * * * * * * * */
+        /* * * * * * * * * * * methods * * * * * * * * * * * */
 
         /*   clear or initialize the sudoku
          */
@@ -177,7 +177,7 @@ class Sudoku {
         void set_hash(void) {
             std::hash<string> hasher ;
             sudoku_hash = hasher( sudoku_str ) ;
-            stringstream ss ;
+            stringstream ss ; // using stringstream convert hash into string
             ss << sudoku_hash ;
             ss >> sudoku_hash_str ;
         } // set_hast()
@@ -202,7 +202,7 @@ class Sudoku {
           sudoku[x][y] = num ;
         } // set_num()
 
-        /* * * * * * * * * * * commands * * * * * * * * * * * */
+        /* * * * * * * * * * * methods * * * * * * * * * * * */
 
     // end protected
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -238,7 +238,7 @@ class Sudoku {
             else sudoku_size = 9 ;
             cell_size = sudoku_size % 3 ? 2 : 3 ;
             used = new bool[ sudoku_size ] ;
-            sudoku = new int*[ sudoku_size ] ;                                          // sudoku is a pointer of integer pointer (int**)
+            sudoku = new int*[ sudoku_size ] ;                                   // sudoku is a pointer of integer pointer (int**)
             for ( int i = 0 ; i < sudoku_size ; ++i )
                 sudoku[i] = new int[ sudoku_size ] ;
             build_times = 0 ;
@@ -294,6 +294,8 @@ class Sudoku {
         /* * * * * * * * * * * operators * * * * * * * * * * * */
         /* * * * * * * * * * * methods * * * * * * * * * * * */
 
+        /*   check if the sudoku is fully filled
+         */
         bool self_check(void) {
             for ( int x = 0 ; x < sudoku_size ; ++x )
                 for ( int y = 0 ; y < sudoku_size ; ++ y )
@@ -322,6 +324,8 @@ class Sudoku {
             } // for()
         } // print_cell()
 
+        /*   save this sudoku into file
+         */
         void save( string filename = "" ) {
             if ( filename == "" ) filename = hash_str() ;
             // ************************ // may be buggy
@@ -346,15 +350,34 @@ class Sudoku {
             } // catch()
         } // save sodoku
 
+        /*   delete saved sudoku file
+         */
         void delete_sudoku(void) {
             string filename = dirname + hash_str() + ".sudoku" ;
             std::remove( filename.c_str() ) ;
         } // delete_sudoku()
 
+        /*   set hardness to this sudoku
+         */
         void set_hardness( Hardness hardness ) {
         	  this->sudoku_hardness = hardness ;
               dig() ;
         } // set_hardness()
+
+        bool correct( int x, int y, int number ) {
+            for ( int i = 0 ; i < sudoku_size+1 ; i++ ) used[i] = false ;
+            check_cell( x, y ) ;
+            check_cross( x, y ) ;
+            return used[number] ;
+        } // correct()
+
+        void set_array( int x, int y, int num ) {
+          set_num( x, y, num ) ;
+        } // set_array()
+
+        int rtn_sudoku( int x, int y ) {
+          return sudoku[x][y] ;
+        } // rtn_sudoku()
 
         /* * * * * * * * * * * methods * * * * * * * * * * * */
         /* * * * * * * * * * * getters * * * * * * * * * * * */
@@ -365,7 +388,7 @@ class Sudoku {
 
         string hash_str(void) {
             return sudoku_hash_str ;
-        }
+        } // hash_str getter
 
         /*  get how many times retried to build this sudoku
          */
@@ -383,24 +406,9 @@ class Sudoku {
 
         int size(void) {
             return sudoku_size ;
-        }
+        } // size getter
 
         /* * * * * * * * * * * getters * * * * * * * * * * * */
-
-        bool correct( int x, int y, int number ) {
-            for ( int i = 0 ; i < sudoku_size+1 ; i++ ) used[i] = false ;
-            check_cell( x, y ) ;
-            check_cross( x, y ) ;
-            return used[number] ;
-        } // correct()
-
-        void set_array( int x, int y, int num ) {
-          set_num( x, y, num ) ;
-        } // set_array()
-
-        int rtn_sudoku( int x, int y ) {
-          return sudoku[x][y] ;
-        } // rtn_sudoku()
     // end public
 }; // class Sudoku
 

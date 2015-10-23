@@ -16,7 +16,6 @@ class Manager {
     	int manager_size, sudoku_index ;
         Sudoku* s ;                                                              // current sudoku
         vector<Sudoku*> sudoku_pointer_list ;
-        vector<string> file_list ;
         set<pair<int, string>> rank_list ;
         string dirname, list_file_name, rank_file_name ;
 
@@ -32,7 +31,7 @@ class Manager {
         void write_to_file( Sudoku* sptr ) {
             ofstream file( list_file_name, std::ios_base::app ) ;
             if ( file.is_open() ) file << sptr->file_name() << endl ;
-        }
+        } // add sigle sudoku into list file
 
         void rebuild_file_system(void) {
             ofstream file( list_file_name ) ;
@@ -40,12 +39,11 @@ class Manager {
             file.close() ;
             for ( int i = 0 ; i < sudoku_pointer_list.size() ; ++i )
                 write_to_file( sudoku_pointer_list.at( i ) ) ;
-        }
+        } // override existing list file by newest version
 
         void add_to_list( Sudoku* sptr ) {
             sudoku_pointer_list.push_back(sptr) ;
             sudoku_index = sudoku_pointer_list.size() - 1 ;                      // update sudoku_inex by the index of newest sudoku object
-            file_list.push_back( sptr->file_name() ) ;
             s = sptr ;                                                           // update s to pointing newest sudoku object
         } // add_to_list()
 
@@ -81,7 +79,7 @@ class Manager {
                 sudoku_file >> sudoku_str ;
                 add_to_list( new Sudoku( sudoku_str ) ) ;
             }
-        }
+        } // load existing list file
 
         void load_rank_file(void) {
             ifstream file( rank_file_name ) ;
@@ -91,7 +89,7 @@ class Manager {
             while( file >> score >> player_name ) {
                 rank_list.insert( make_pair( score, player_name ) ) ;
             }
-        }
+        } // load existing rank file
 
         void save_rank_file(void) {
             ofstream file( rank_file_name ) ;
@@ -100,7 +98,7 @@ class Manager {
             int count = 0 ;
             for ( ; ite != end && count < 10 ; ++ite, ++count )
                 file << (*ite).first << " " << (*ite).second << endl ;
-        }
+        } // save rank file
 
         /* * * * * * * * * * sudoku_list * * * * * * * * * * */
 
@@ -108,13 +106,13 @@ class Manager {
             for ( int i = 1 ; i < 2 * manager_size ; ++i )
                 cout << '=' ;
             cout << endl ;
-        }
+        } // print_line
 
         void init() {
             int size = manager_size ;
             destructor() ;
             constructor( size ) ;
-        }
+        } // re-initialize this object
 
         void destructor() {
             for_each( sudoku_pointer_list.begin(), sudoku_pointer_list.end(), [](Sudoku* p){
@@ -124,7 +122,6 @@ class Manager {
                 }
             }) ; // for ( p : sudoku_pointer_list )
             sudoku_pointer_list.clear() ;
-            file_list.clear() ;
         } // destructor()
 
         void constructor( int size = 9 ) {
@@ -139,7 +136,7 @@ class Manager {
             if ( file.is_open() ) load_sudoku_list() ;
             else create_sudoku_list() ;
             load_rank_file() ;
-        } // initializer()
+        } // constructor()
 
 
     // end protected
@@ -192,7 +189,7 @@ class Manager {
             cout << sudoku_index << endl ;
             print_line() ;
             sudoku_pointer_list.at( sudoku_index )->print_sudoku() ;
-        }
+        } // print sudoku with extra information
 
         void switch_sudoku( int index ) {
             if ( index >= sudoku_pointer_list.size() ) {
@@ -202,7 +199,7 @@ class Manager {
             }
             sudoku_index = index ;
             s = sudoku_pointer_list.at(index) ;
-        }
+        } // switch current pointing sudoku
 
         void print_sudokus( void ) {
             int index = 0, size = 2 * manager_size ;
@@ -217,7 +214,7 @@ class Manager {
                         cout << '=' ;
                     cout << endl ;
                 } ) ;
-        } // print_sudokus()
+        } // print all sudokus
 
         void set_hardness( int int_hardness, Sudoku & new_sudoku ) {
             new_sudoku = *s ;
