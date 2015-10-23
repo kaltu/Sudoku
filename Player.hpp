@@ -11,7 +11,7 @@ class Player{
     int spendtime, size, s_score ;
     int cell_size ;
     Hardness hardness ;
-    Sudoku *now_sudoku;
+    Sudoku *now_sudoku ;
     bool **uncorrect ;
 
     void build_bool() {
@@ -73,9 +73,9 @@ class Player{
       enter_coordinate( x, y ) ;
       cin >> num ;
       if ( ! ( 0 < num && num < size + 1 ) ) return enter_sudoku( x, y, num ) ;
-      cout << "not num problemQQ!\n" ;
       if ( ! now_sudoku->rtn_sudoku( x, y ) )
-        if ( ! now_sudoku->correct( x, y, num ) ) now_sudoku->set_array( x, y, num ) ;
+        if ( ! now_sudoku->correct( x, y, num ) )
+          now_sudoku->set_array( x, y, num ) ;
         else uncorrect[x][y] = false ;
       else return enter_sudoku( x, y, num ) ;
     } // enter_sudoku()
@@ -115,6 +115,7 @@ class Player{
       update_sudoku( manager.request_quesion() ) ;
       exercise(3) ;
       cout << "All stage clear!!" << endl ;
+      put_rank( manager ) ;
     } // stageMode()
 
     void printNow( int num ) {
@@ -127,13 +128,12 @@ class Player{
                 int c_y = ( y / cell_size ) * cell_size ;
                 if ( !uncorrect[x][y] ) {
                     SetColor( 7, 70 ) ;
-                    cout << " " ;
+                    cout << "  " ;
                     SetColor() ;
-                    cout << " " ;
                 } // if()
                 else if ( now_sudoku->rtn_sudoku( x, y ) )
                   set_color( c_x, c_y, now_sudoku->rtn_sudoku( x, y ) ) ;
-                else cout << "  " ;
+                else set_color( c_x, c_y, now_sudoku->rtn_sudoku( x, y ) ) ;
             } // for
             Print_ycoordinate(x) ;
         } // for
@@ -149,7 +149,7 @@ class Player{
           int c_y = ( y / cell_size ) * cell_size ;
           if ( now_sudoku->rtn_sudoku( x, y ) )
             set_color( c_x, c_y, now_sudoku->rtn_sudoku( x, y ) ) ;
-          else cout << "  " ;
+          else set_color( c_x, c_y, now_sudoku->rtn_sudoku( x, y ) ) ;
         } // for
         Print_ycoordinate(x) ;
       } // for
@@ -158,12 +158,16 @@ class Player{
 
     void set_color( int x, int y, int sudoku ) {
       if ( ( x % 2 == 0 && y % 2 != 0 ) || ( x % 2 != 0 && y % 2 == 0 ) ) {
-        SetColor( 7, 90 ) ;
-        cout << sudoku << " " ;
+        SetColor( 7, 128 ) ;
+        if ( sudoku ) cout << sudoku << " " ;
+        else cout << "  " ;
         SetColor() ;
       }
-      else
+      else if ( sudoku )
         cout << sudoku << " " ;
+      else
+        cout << "  " ;
+
     } // set_color()
 
     void Print_xcoordinate() {
@@ -182,6 +186,10 @@ class Player{
         cout << " " ;
       } // if
     } // Print_ycoordinate()
+
+    void put_rank( Manager & manager ) {
+      manager.add_to_rank( s_score, name ) ;
+    } // put_rank()
 
   // end public
 }; // Player

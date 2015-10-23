@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 using namespace std ;
 
-enum Hardness { simple = 2, medium = 6, hard = 10 };
+enum Hardness { simple = 2, medium = 4, hard = 6 };
 class Sudoku {
     protected:
     	Hardness sudoku_hardness ;
@@ -144,7 +144,7 @@ class Sudoku {
         range hardness * (1~3)
         */
         void dig(void) {
-          int hole = sudoku_size > 4 ? sudoku_hardness * sudoku_size : sudoku_hardness * cell_size ;
+          int hole = sudoku_size > 4 ? (2+sudoku_hardness) * sudoku_size : sudoku_hardness * cell_size ;
           for( int i = 0 ; i < hole ; i++ ) {
             int x = ( rand() % sudoku_size ) ;
             int y = ( rand() % sudoku_size ) ;
