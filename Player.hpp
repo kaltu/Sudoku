@@ -86,6 +86,10 @@ class Player{
         else uncorrect[x][y] = false ;
       else return enter_sudoku( x, y, num ) ;
     } // enter_sudoku()
+
+    void update_sudoku( Sudoku * sudoku ) {
+      now_sudoku = sudoku ;
+    } // update_sudoku()
   // end protected
   public:
 
@@ -119,5 +123,10 @@ class Player{
                 else if ( now_sudoku->rtn_sudoku( x, y ) ) cout << now_sudoku->rtn_sudoku( x, y ) << " " ;
                 else cout << "  " ;
     } // printNow()
+
+    void new_question( Sudoku *sudoku ) {
+      update_sudoku( sudoku ) ;
+    } // update_sudoku()
+
   // end public
 }; // Player
