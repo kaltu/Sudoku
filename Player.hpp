@@ -122,7 +122,9 @@ class Player{
         Print_xcoordinate() ;
         Print_ycoordinate(0) ;
         for ( int x = 0 ; x < size ; cout << endl, ++x, Print_ycoordinate(x) ) {
-            for ( int y = 0 ; y < size ; ++y )
+            for ( int y = 0 ; y < size ; ++y ) {
+                int c_x = ( x / cell_size ) * cell_size ;
+                int c_y = ( y / cell_size ) * cell_size ;
                 if ( !uncorrect[x][y] ) {
                     SetColor( 7, 70 ) ;
                     cout << " " ;
@@ -130,8 +132,9 @@ class Player{
                     cout << " " ;
                 } // if()
                 else if ( now_sudoku->rtn_sudoku( x, y ) )
-                  cout << now_sudoku->rtn_sudoku( x, y ) << " " ;
+                  set_color( c_x, c_y, now_sudoku->rtn_sudoku( x, y ) ) ;
                 else cout << "  " ;
+            } // for
             Print_ycoordinate(x) ;
         } // for
         Print_xcoordinate() ;
@@ -144,10 +147,8 @@ class Player{
         for ( int y = 0 ; y < size ; ++y ) {
           int c_x = ( x / cell_size ) * cell_size ;
           int c_y = ( y / cell_size ) * cell_size ;
-          if ( now_sudoku->rtn_sudoku( x, y ) ) {
+          if ( now_sudoku->rtn_sudoku( x, y ) )
             set_color( c_x, c_y, now_sudoku->rtn_sudoku( x, y ) ) ;
-            //cout << now_sudoku->rtn_sudoku( x, y ) << " " ;
-          } // if
           else cout << "  " ;
         } // for
         Print_ycoordinate(x) ;
