@@ -18,7 +18,7 @@ class Manager {
         vector<Sudoku*> sudoku_pointer_list ;
         vector<string> file_list ;
         set<pair<int, string>> rank_list ;
-        string list_file_name, rank_file_name ;
+        string dirname, list_file_name, rank_file_name ;
 
         /* * * * * * * * * *sudoku_creater* * * * * * * * * * */
 
@@ -56,8 +56,11 @@ class Manager {
             cout << "creating file: " << list_file_name << endl ;
             // ************************ // may be buggy
             struct stat sb ;
-            if ( ! ( stat( "sudoku\\", &sb ) == 0 && S_ISDIR( sb.st_mode ) ))
-                system( "md sudoku" ) ;
+            if ( ! ( stat( dirname.c_str(), &sb ) == 0 && S_ISDIR( sb.st_mode ) )) {
+                stringstream ss ;
+                ss << "md sudoku" << manager_size ;
+                system( ss.str().c_str() ) ;
+            }
             // ************************ // may be buggy
             ofstream file( list_file_name ) ;
             new_sudoku() ;
@@ -127,8 +130,11 @@ class Manager {
         void constructor( int size = 9 ) {
         	manager_size = size == 9 ? 9 : 4 ;
             s = nullptr ;
-            list_file_name = "sudoku\\sudokus.list" ;
-            rank_file_name = "sudoku\\rank.rank" ;
+            stringstream ss ;
+            ss << "sudoku" << manager_size << "\\" ;
+            dirname = ss.str() ;
+            list_file_name = dirname + "sudokus.list" ;
+            rank_file_name = dirname + "rank.rank" ;
             ifstream file( list_file_name ) ;
             if ( file.is_open() ) load_sudoku_list() ;
             else create_sudoku_list() ;

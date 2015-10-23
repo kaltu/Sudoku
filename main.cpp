@@ -12,10 +12,11 @@ using namespace std ;
 void play( Manager &manager ) ;
 void manage( Manager &manager ) ;
 void start( Manager &manager ) ;
+void init(void) ;
 
 void play( Manager &manager ) {
     manager.clear_screen() ;
-    cout << "0.exit player mode" << endl
+    cout << "0. exit player mode" << endl
          << ">>> " ;
     string opt ;
     cin >> opt ;
@@ -28,12 +29,12 @@ void play( Manager &manager ) {
 
 void manage( Manager &manager ) {
     manager.clear_screen() ;
-    cout << "1.show all sudokus" << endl
-         << "2.show current sudoku" << endl
-         << "3.change sudoku" << endl
-         << "4.add a new sudoku" << endl
-         << "5.delete current sudoku" << endl
-         << "0.exit managing mode" << endl
+    cout << "1. show all sudokus" << endl
+         << "2. show current sudoku" << endl
+         << "3. change sudoku" << endl
+         << "4. add a new sudoku" << endl
+         << "5. delete current sudoku" << endl
+         << "0. exit managing mode" << endl
          << ">>> " ;
     string opt ;
     cin >> opt ;
@@ -61,9 +62,9 @@ void manage( Manager &manager ) {
 
 void start( Manager &manager ) {
     manager.clear_screen() ;
-    cout << "1.play" << endl
-         << "2.manage" << endl
-         << "0.exit" << endl
+    cout << "1. play" << endl
+         << "2. manage" << endl
+         << "0. exit" << endl
          << ">>> " ;
     string opt ;
 
@@ -72,16 +73,34 @@ void start( Manager &manager ) {
         return play( manager ) ;
     else if ( opt == "2" )
         return manage( manager ) ;
-    else if ( opt != "0" )
-        return start(manager) ;
+    else if ( opt == "0" )
+        return init() ;
+    else
+        return start( manager ) ;
 } // starter
+
+void init(void) {
+    system( "cls" ) ;
+    cout << "4. mini-sudoku" << endl
+         << "9. standard-sudoku" << endl
+         << "0. exit"
+         << ">>> " ;
+    string i ;
+    cin >> i ;
+    if ( i == "4" ) {
+        Manager manager(4) ;
+        start( manager ) ;
+    }
+    else if ( i == "9" ) {
+        Manager manager(9) ;
+        start( manager ) ;
+    }
+    else if ( i != "0" )
+        return init() ;
+}
 
 int main( int argc, char** argv ) {
     srand(time(NULL)) ;
-    Player player1 ;
-    player1.doexercise() ;
-    Manager manager ;
-    manager.print_rank() ;
-    //start( manager ) ;
+    init() ;
     return 0 ;
 } // main
