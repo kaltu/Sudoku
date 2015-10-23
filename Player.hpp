@@ -102,6 +102,7 @@ class Player{
     } // SetColor()
 
     void exerciseMode() {
+      system( "cls" ) ;
       exercise() ;
     } // exerciseMode()
 

@@ -16,26 +16,23 @@ void init(void) ;
 
 void play( Manager &manager ) {
     manager.clear_screen() ;
-    cout << "0.exit player mode" << endl
-         << "1.select play mode" << endl
+    Player player( manager.request_quesion() ) ;
+    manager.clear_screen() ;
+    cout << "1. Exercise" << endl
+         << "2. Advantage" << endl
+         << "3. Show Ranking" << endl
+         << "0. exit player mode" << endl
          << ">>> " ;
     string opt ;
     cin >> opt ;
     if ( opt == "0" )
         return start( manager ) ;
-    if ( opt == "1" ) {
-      manager.clear_screen() ;
-      Player player( manager.request_quesion() ) ;
-      cout << "1.Exercise Mode!" << endl
-           << "2.Stage    Mode!" << endl
-           << "3.Show Ranking!" << endl
-           << "Other key back to play control" << endl ;
-      string act ;
-      cin >> act ;
-      manager.clear_screen() ;
-      if ( act == "1" ) player.exerciseMode() ;
-      else if ( act == "2" ) player.stageMode( manager ) ;
-    }
+    else if ( opt == "1" )
+        player.exerciseMode() ;
+    else if ( opt == "2" )
+        player.stageMode( manager ) ;
+    else if ( opt == "3" )
+        manager.print_rank() ;
     else return play( manager ) ;
     system( "pause" ) ;
     return play( manager ) ;

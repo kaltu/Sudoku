@@ -251,11 +251,13 @@ class Manager {
         } // add_to_rank()
 
         void print_rank(void) {
+            clear_screen() ;
             auto ite = rank_list.rbegin() ;
             auto end = rank_list.rend() ;
             int count = 0 ;
-            for ( ; ite != end && count < 10 ; ++ite, ++count )
-                cout << (*ite).first << " : " << (*ite).second << endl ;
+            cout << "Rank\tScore\tName\n" ;
+            for ( ; ite != end && count < 10 ; ++ite )
+                cout << ++count << '\t' << (*ite).first << '\t' << (*ite).second << endl ;
         } // print_rank()
         /* * * * * * * * * * * methods * * * * * * * * * * * */
     // end public
