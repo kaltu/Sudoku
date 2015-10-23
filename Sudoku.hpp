@@ -145,7 +145,7 @@ class Sudoku {
         */
         void dig(void) {
           int hole = sudoku_size > 4 ? sudoku_hardness * sudoku_size : sudoku_hardness * cell_size ;
-          //++hole ;
+          hole = 1 ;
           for( int i = 0 ; i < hole ; i++ ) {
             int x = ( rand() % sudoku_size ) ;
             int y = ( rand() % sudoku_size ) ;
